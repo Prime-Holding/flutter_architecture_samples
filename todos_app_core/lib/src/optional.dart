@@ -10,7 +10,7 @@ import 'dart:collection';
 /// values to be null. It signals that a value is not required and provides
 /// convenience methods for dealing with the absent case.
 class Optional<T> extends IterableBase<T> {
-  final T _value;
+  final T? _value;
 
   /// Constructs an empty Optional.
   const Optional.absent() : _value = null;
@@ -36,7 +36,7 @@ class Optional<T> extends IterableBase<T> {
   /// Gets the Optional value.
   ///
   /// Throws [StateError] if [value] is null.
-  T get value {
+  T? get value {
     if (_value == null) {
       throw StateError('value called on absent Optional.');
     }
@@ -44,7 +44,7 @@ class Optional<T> extends IterableBase<T> {
   }
 
   /// Executes a function if the Optional value is present.
-  void ifPresent(void Function(T value) ifPresent) {
+  void ifPresent(void Function(T? value) ifPresent) {
     if (isPresent) {
       ifPresent(_value);
     }
@@ -70,14 +70,14 @@ class Optional<T> extends IterableBase<T> {
   }
 
   /// Gets the Optional value, or [null] if there is none.
-  T get orNull => _value;
+  T? get orNull => _value;
 
   /// Transforms the Optional value.
   ///
   /// If the Optional is [absent()], returns [absent()] without applying the transformer.
   ///
   /// The transformer must not return [null]. If it does, an [ArgumentError] is thrown.
-  Optional<S> transform<S>(S Function(T value) transformer) {
+  Optional<S> transform<S>(S Function(T? value) transformer) {
     return _value == null
         ? Optional.absent()
         : Optional.of(transformer(_value));
@@ -85,7 +85,7 @@ class Optional<T> extends IterableBase<T> {
 
   @override
   Iterator<T> get iterator =>
-      isPresent ? <T>[_value].iterator : Iterable<T>.empty().iterator;
+      isPresent ? <T>[_value!].iterator : Iterable<T>.empty().iterator;
 
   /// Delegates to the underlying [value] hashCode.
   @override
