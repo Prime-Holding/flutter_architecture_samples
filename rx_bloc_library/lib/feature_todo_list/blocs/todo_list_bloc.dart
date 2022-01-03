@@ -33,14 +33,6 @@ class TodoListBloc extends $TodoListBloc {
   @override
   Stream<Result<List<TodoEntity>>> _mapToTodoListState() =>
       _$fetchDataEvent.startWith(null).switchMap(
-            (_) => _repository
-                .todos()
-                .map((todos) => todos.isEmpty
-                    ? [
-                        TodoEntity('test', '123', 'note', false),
-                        TodoEntity('test', '123', 'note', true),
-                      ]
-                    : todos)
-                .asResultStream(),
+            (_) => _repository.todos().asResultStream(),
           );
 }

@@ -1,5 +1,6 @@
 import 'package:rx_bloc/rx_bloc.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:todos_repository_core/todos_repository_core.dart';
 
 part 'todo_details_bloc.rxb.g.dart';
 
@@ -7,34 +8,49 @@ part 'todo_details_bloc.rxb.g.dart';
 abstract class TodoDetailsBlocEvents {
   /// TODO: Document the event
   void fetchData();
+
+  void setCompletion(bool complete);
+
+  void delete();
 }
 
 /// A contract class containing all states of the TodoDetailsBloC.
 abstract class TodoDetailsBlocStates {
-  /// The loading state
-  Stream<bool> get isLoading;
-
   /// The error state
   Stream<String> get errors;
 
-  /// TODO: Document the state
-  Stream<Result<String>> get data;
+  Stream<TodoEntity> get todo;
+
+  Stream<bool> get completed;
+
+  Stream<TodoEntity> get deleted;
+}
+
+extension TodoEntityCopyWith on TodoEntity {
+  TodoEntity copyWith({
+    bool? complete,
+    String? id,
+    String? note,
+    String? task,
+  }) =>
+      TodoEntity(
+        task ?? this.task,
+        id ?? this.id,
+        note ?? this.note,
+        complete ?? this.complete,
+      );
 }
 
 @RxBloc()
 class TodoDetailsBloc extends $TodoDetailsBloc {
-  @override
-  Stream<Result<String>> _mapToDataState() => _$fetchDataEvent
-      .startWith(null)
-      .throttleTime(const Duration(milliseconds: 200))
-      .switchMap((value) async* {
-        ///TODO: Replace the code below with a repository invocation
-        yield Result<String>.loading();
-        await Future.delayed(const Duration(seconds: 1));
-        yield Result<String>.success('Details');
-      })
-      .setResultStateHandler(this)
-      .shareReplay(maxSize: 1);
+  TodoDetailsBloc(
+    ReactiveTodosRepository repository, {
+    required String id,
+  })  : _repository = repository,
+        _id = id;
+
+  final ReactiveTodosRepository _repository;
+  final String _id;
 
   /// TODO: Implement error event-to-state logic
   @override
@@ -42,5 +58,47 @@ class TodoDetailsBloc extends $TodoDetailsBloc {
       errorState.map((error) => error.toString());
 
   @override
-  Stream<bool> _mapToIsLoadingState() => loadingState;
+  Stream<TodoEntity> _mapToTodoState() => _$fetchDataEvent
+      .startWith(null)
+      .switchMap(
+        (value) => _repository
+            .todos()
+            .map((todos) => todos.firstWhere((todo) => todo.id == _id))
+            .asResultStream(),
+      )
+      .setResultStateHandler(this)
+      .whereSuccess();
+
+  @override
+  Stream<bool> _mapToCompletedState() => _$setCompletionEvent
+      .withLatestFrom<TodoEntity, TodoEntity>(
+        todo,
+        (complete, todo) => todo.copyWith(complete: complete),
+      )
+      .switchMap(
+        (todo) => _repository
+            .updateTodo(todo)
+            .asStream()
+            .map((_) => todo)
+            .asResultStream(),
+      )
+      .setResultStateHandler(this)
+      .whereSuccess()
+      .map((todo) => todo.complete);
+
+  @override
+  Stream<TodoEntity> _mapToDeletedState() => _$deleteEvent
+      .withLatestFrom<TodoEntity, TodoEntity>(
+        todo,
+        (complete, todo) => todo,
+      )
+      .switchMap(
+        (todo) => _repository
+            .deleteTodo([todo.id])
+            .asStream()
+            .mapTo(todo)
+            .asResultStream(),
+      )
+      .setResultStateHandler(this)
+      .whereSuccess();
 }

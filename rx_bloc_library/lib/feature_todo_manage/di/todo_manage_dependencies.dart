@@ -8,11 +8,8 @@ import '../blocs/todo_manage_bloc.dart';
 class TodoManageDependencies {
   TodoManageDependencies._(this.context);
 
-  factory TodoManageDependencies.of(BuildContext context) => _instance != null
-      ? _instance!
-      : _instance = TodoManageDependencies._(context);
-
-  static TodoManageDependencies? _instance;
+  factory TodoManageDependencies.from(BuildContext context) =>
+      TodoManageDependencies._(context);
 
   final BuildContext context;
 

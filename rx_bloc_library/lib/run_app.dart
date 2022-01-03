@@ -23,6 +23,10 @@ class TodosApp extends StatelessWidget {
         providers: [
           Provider<ReactiveTodosRepository>(
             create: (context) => ReactiveLocalStorageRepository(
+              seedValue: [
+                TodoEntity('test 1', '1', 'note 1', false),
+                TodoEntity('test 2', '2', 'note 2', true),
+              ],
               repository: KeyValueStorage(
                 'rx_bloc_library',
                 SharedPreferences.getInstance(),

@@ -57,7 +57,10 @@ class TodoListPage extends StatelessWidget {
                   final removedTodo =
                       await Navigator.of(context).push<TodoEntity>(
                     MaterialPageRoute(builder: (_) {
-                      return TodoDetailsPage.withDependencies(context);
+                      return TodoDetailsPage.withDependencies(
+                        context,
+                        id: todo.id,
+                      );
                     }),
                   );
                   // if (removedTodo != null) {

@@ -12,7 +12,7 @@ class TodoManagePage extends StatelessWidget {
 
   static Widget withDependencies(BuildContext context, {Key? key}) =>
       MultiProvider(
-        providers: TodoManageDependencies.of(context).providers,
+        providers: TodoManageDependencies.from(context).providers,
         child: TodoManagePage(
           key: key,
         ),
