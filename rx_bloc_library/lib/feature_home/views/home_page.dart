@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rx_bloc/flutter_rx_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:rx_bloc_library/base/models/models.dart';
 import 'package:rx_bloc_library/feature_stats/views/stats_page.dart';
 import 'package:rx_bloc_library/feature_todo_list/views/todo_list_page.dart';
-import 'package:rx_bloc_library/models/models.dart';
-import 'package:rx_bloc_library/widgets/widgets.dart';
+import 'package:rx_bloc_library/base/widgets/widgets.dart';
 import 'package:todos_app_core/todos_app_core.dart';
 
-import '../../localization.dart';
+import '../../base/localization.dart';
 import '../blocs/home_bloc.dart';
 import '../di/home_dependencies.dart';
 
@@ -27,6 +27,7 @@ class HomePage extends StatelessWidget {
       state: (bloc) => bloc.states.selectedTab,
       builder: (context, tab, bloc) {
         final activeTab = tab.data ?? AppTab.todos;
+
         return Scaffold(
           appBar: AppBar(
             title: Text(FlutterRxBlocLocalizations.of(context).appTitle),

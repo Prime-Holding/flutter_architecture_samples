@@ -5,7 +5,7 @@ import 'package:rx_bloc_library/feature_todo_manage/views/todo_manage_page.dart'
 import 'package:todos_app_core/todos_app_core.dart';
 import 'package:todos_repository_core/todos_repository_core.dart';
 
-import '../../rx_bloc_library_keys.dart';
+import '../../base/rx_bloc_library_keys.dart';
 import '../blocs/todo_details_bloc.dart';
 import '../di/todo_details_dependencies.dart';
 

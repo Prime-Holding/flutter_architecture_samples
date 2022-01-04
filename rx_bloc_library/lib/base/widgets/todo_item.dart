@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:todos_app_core/todos_app_core.dart';
-import 'package:rx_bloc_library/models/models.dart';
 import 'package:todos_repository_core/todos_repository_core.dart';
 
 class TodoItem extends StatelessWidget {

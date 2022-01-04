@@ -4,7 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:todos_app_core/todos_app_core.dart';
-import 'package:rx_bloc_library/models/models.dart';
+import 'package:rx_bloc_library/base/models/models.dart';
 
 class TabSelector extends StatelessWidget {
   final AppTab activeTab;

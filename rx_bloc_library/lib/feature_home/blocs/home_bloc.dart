@@ -1,5 +1,5 @@
 import 'package:rx_bloc/rx_bloc.dart';
-import 'package:rx_bloc_library/models/models.dart';
+import 'package:rx_bloc_library/base/models/models.dart';
 import 'package:rxdart/rxdart.dart';
 
 part 'home_bloc.rxb.g.dart';

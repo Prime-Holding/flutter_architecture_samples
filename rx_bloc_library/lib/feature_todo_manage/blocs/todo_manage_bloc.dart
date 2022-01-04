@@ -18,9 +18,6 @@ abstract class TodoManageBlocEvents {
 
 /// A contract class containing all states of the TodoManageBloC.
 abstract class TodoManageBlocStates {
-  /// The loading state
-  Stream<bool> get isLoading;
-
   /// The error state
   Stream<String> get errors;
 
@@ -50,9 +47,6 @@ class TodoManageBloc extends $TodoManageBloc {
       errorState.map((error) => error.toString());
 
   @override
-  Stream<bool> _mapToIsLoadingState() => loadingState;
-
-  @override
   Stream<String> _mapToNoteState() => _$setNoteEvent
       .startWith(_todoEntity.note)
       .distinct()
@@ -71,6 +65,7 @@ class TodoManageBloc extends $TodoManageBloc {
 
   @override
   Stream<TodoEntity> _mapToSavedState() => _$saveEvent
+      .throttleTime(Duration(seconds: 1))
       .switchMap(
         (value) {
           if (_isEditing) {

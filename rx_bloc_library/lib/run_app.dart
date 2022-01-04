@@ -4,7 +4,7 @@
 
 import 'package:provider/provider.dart';
 import 'package:rx_bloc_library/feature_home/views/home_page.dart';
-import 'package:rx_bloc_library/localization.dart';
+import 'package:rx_bloc_library/base/localization.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todos_app_core/todos_app_core.dart';

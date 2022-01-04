@@ -28,9 +28,6 @@ abstract class $TodoManageBloc extends RxBlocBase
   /// Тhe [Subject] where events sink to by calling [setNote]
   final _$setNoteEvent = BehaviorSubject<String>();
 
-  /// The state of [isLoading] implemented in [_mapToIsLoadingState]
-  late final Stream<bool> _isLoadingState = _mapToIsLoadingState();
-
   /// The state of [errors] implemented in [_mapToErrorsState]
   late final Stream<String> _errorsState = _mapToErrorsState();
 
@@ -53,9 +50,6 @@ abstract class $TodoManageBloc extends RxBlocBase
   void setNote(String note) => _$setNoteEvent.add(note);
 
   @override
-  Stream<bool> get isLoading => _isLoadingState;
-
-  @override
   Stream<String> get errors => _errorsState;
 
   @override
@@ -66,8 +60,6 @@ abstract class $TodoManageBloc extends RxBlocBase
 
   @override
   Stream<TodoEntity> get saved => _savedState;
-
-  Stream<bool> _mapToIsLoadingState();
 
   Stream<String> _mapToErrorsState();
 

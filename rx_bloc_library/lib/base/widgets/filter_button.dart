@@ -3,9 +3,9 @@
 // in the LICENSE file.
 
 import 'package:flutter/material.dart';
-
 import 'package:todos_app_core/todos_app_core.dart';
-import 'package:rx_bloc_library/models/models.dart';
+
+import '../models/models.dart';
 
 class FilterButton extends StatelessWidget {
   final bool visible;

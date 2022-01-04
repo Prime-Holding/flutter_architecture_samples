@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rx_bloc/flutter_rx_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:rx_bloc_library/feature_todo_details/views/todo_details_page.dart';
-import 'package:rx_bloc_library/widgets/loading_indicator.dart';
-import 'package:rx_bloc_library/widgets/widgets.dart';
+import 'package:rx_bloc_library/base/widgets/widgets.dart';
 import 'package:todos_app_core/todos_app_core.dart';
 import 'package:todos_repository_core/todos_repository_core.dart';
 
