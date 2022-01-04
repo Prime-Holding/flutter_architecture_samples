@@ -1,4 +1,5 @@
 import 'package:rx_bloc/rx_bloc.dart';
+import 'package:rx_bloc_library/base/extensions/todo_entity_extensions.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todos_repository_core/todos_repository_core.dart';
 
@@ -24,21 +25,6 @@ abstract class TodoDetailsBlocStates {
   Stream<bool> get completed;
 
   Stream<TodoEntity> get deleted;
-}
-
-extension TodoEntityCopyWith on TodoEntity {
-  TodoEntity copyWith({
-    bool? complete,
-    String? id,
-    String? note,
-    String? task,
-  }) =>
-      TodoEntity(
-        task ?? this.task,
-        id ?? this.id,
-        note ?? this.note,
-        complete ?? this.complete,
-      );
 }
 
 @RxBloc()
@@ -79,7 +65,7 @@ class TodoDetailsBloc extends $TodoDetailsBloc {
         (todo) => _repository
             .updateTodo(todo)
             .asStream()
-            .map((_) => todo)
+            .mapTo(todo)
             .asResultStream(),
       )
       .setResultStateHandler(this)

@@ -126,6 +126,7 @@ class TodoDetailsPage extends StatelessWidget {
                                   return TodoManagePage.withDependencies(
                                     context,
                                     key: ArchSampleKeys.editTodoScreen,
+                                    todoEntity: todo,
                                     // onSave: (task, note) {
                                     //   todosBloc.add(
                                     //     UpdateTodo(

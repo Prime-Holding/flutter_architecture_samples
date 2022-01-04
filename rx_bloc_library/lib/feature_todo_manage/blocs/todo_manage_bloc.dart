@@ -1,12 +1,19 @@
 import 'package:rx_bloc/rx_bloc.dart';
+import 'package:rx_bloc_library/base/extensions/todo_entity_extensions.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:todos_repository_core/todos_repository_core.dart';
 
 part 'todo_manage_bloc.rxb.g.dart';
 
 /// A contract class containing all events of the TodoManageBloC.
 abstract class TodoManageBlocEvents {
-  /// TODO: Document the event
-  void fetchData();
+  void save();
+
+  @RxBlocEvent(type: RxBlocEventType.behaviour)
+  void setTask(String task);
+
+  @RxBlocEvent(type: RxBlocEventType.behaviour)
+  void setNote(String note);
 }
 
 /// A contract class containing all states of the TodoManageBloC.
@@ -17,24 +24,25 @@ abstract class TodoManageBlocStates {
   /// The error state
   Stream<String> get errors;
 
-  /// TODO: Document the state
-  Stream<Result<String>> get data;
+  Stream<String> get task;
+
+  Stream<String> get note;
+
+  Stream<TodoEntity> get saved;
 }
 
 @RxBloc()
 class TodoManageBloc extends $TodoManageBloc {
-  @override
-  Stream<Result<String>> _mapToDataState() => _$fetchDataEvent
-      .startWith(null)
-      .throttleTime(const Duration(milliseconds: 200))
-      .switchMap((value) async* {
-        ///TODO: Replace the code below with a repository invocation
-        yield Result<String>.loading();
-        await Future.delayed(const Duration(seconds: 1));
-        yield Result<String>.success('Manage');
-      })
-      .setResultStateHandler(this)
-      .shareReplay(maxSize: 1);
+  TodoManageBloc(
+    ReactiveTodosRepository repository, {
+    required TodoEntity? todoEntity,
+  })  : _todoEntity = todoEntity ?? TodoEntityX.empty(),
+        _repository = repository,
+        _isEditing = todoEntity != null;
+
+  final TodoEntity _todoEntity;
+  final ReactiveTodosRepository _repository;
+  final bool _isEditing;
 
   /// TODO: Implement error event-to-state logic
   @override
@@ -43,4 +51,41 @@ class TodoManageBloc extends $TodoManageBloc {
 
   @override
   Stream<bool> _mapToIsLoadingState() => loadingState;
+
+  @override
+  Stream<String> _mapToNoteState() => _$setNoteEvent
+      .startWith(_todoEntity.note)
+      .distinct()
+      .shareReplay(maxSize: 1);
+
+  @override
+  Stream<String> _mapToTaskState() => _$setTaskEvent
+      .startWith(_todoEntity.task)
+      .distinct()
+      .shareReplay(maxSize: 1);
+
+  TodoEntity get updatedEntity => _todoEntity.copyWith(
+        task: _$setTaskEvent.hasValue ? _$setTaskEvent.value : '',
+        note: _$setNoteEvent.hasValue ? _$setNoteEvent.value : '',
+      );
+
+  @override
+  Stream<TodoEntity> _mapToSavedState() => _$saveEvent
+      .switchMap(
+        (value) {
+          if (_isEditing) {
+            return _repository
+                .updateTodo(updatedEntity)
+                .then((value) => updatedEntity)
+                .asResultStream();
+          }
+          return _repository
+              .addNewTodo(updatedEntity)
+              .then((value) => updatedEntity)
+              .asResultStream();
+        },
+      )
+      .setResultStateHandler(this)
+      .whereSuccess()
+      .share();
 }
