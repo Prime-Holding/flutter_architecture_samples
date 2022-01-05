@@ -58,16 +58,13 @@ class TodoManageBloc extends $TodoManageBloc {
       .distinct()
       .shareReplay(maxSize: 1);
 
-  TodoEntity get updatedEntity => _todoEntity.copyWith(
-        task: _$setTaskEvent.hasValue ? _$setTaskEvent.value : '',
-        note: _$setNoteEvent.hasValue ? _$setNoteEvent.value : '',
-      );
-
   @override
   Stream<TodoEntity> _mapToSavedState() => _$saveEvent
       .throttleTime(Duration(seconds: 1))
       .switchMap(
         (value) {
+          final updatedEntity = _copyTodoWithEventsData();
+
           if (_isEditing) {
             return _repository
                 .updateTodo(updatedEntity)
@@ -83,4 +80,9 @@ class TodoManageBloc extends $TodoManageBloc {
       .setResultStateHandler(this)
       .whereSuccess()
       .share();
+
+  TodoEntity _copyTodoWithEventsData() => _todoEntity.copyWith(
+        task: _$setTaskEvent.hasValue ? _$setTaskEvent.value : '',
+        note: _$setNoteEvent.hasValue ? _$setNoteEvent.value : '',
+      );
 }
