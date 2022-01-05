@@ -41,7 +41,7 @@ class TodoListPage extends StatelessWidget {
             final todo = todos[index];
             return TodoItem(
               todo: todo,
-              onDismissed: (_) => bloc.events.delete(todo),
+              onDismissed: (_) => bloc.events.deleteTodo(todo),
               onTap: () async => await Navigator.of(context).push<TodoEntity>(
                 MaterialPageRoute(builder: (_) {
                   return TodoDetailsPage.withDependencies(
@@ -50,7 +50,7 @@ class TodoListPage extends StatelessWidget {
                   );
                 }),
               ),
-              onCheckboxChanged: (_) => bloc.events.toggleCompletion(todo),
+              onCheckboxChanged: (_) => bloc.events.toggleTodoCompletion(todo),
             );
           },
         ),
@@ -74,7 +74,7 @@ class TodoListPage extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(DeleteTodoSnackBar(
           key: ArchSampleKeys.snackbar,
           todo: todo!,
-          onUndo: () => context.read<TodoListBlocType>().events.add(todo!),
+          onUndo: () => context.read<TodoListBlocType>().events.addTodo(todo),
           localizations: ArchSampleLocalizations.of(context),
         )),
       );

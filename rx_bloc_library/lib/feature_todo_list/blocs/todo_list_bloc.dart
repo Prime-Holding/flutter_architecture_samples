@@ -7,13 +7,13 @@ part 'todo_list_bloc.rxb.g.dart';
 
 /// A contract class containing all events of the TodoListBloC.
 abstract class TodoListBlocEvents {
-  void fetchData();
+  void fetchTodos();
 
-  void toggleCompletion(TodoEntity todoEntity);
+  void toggleTodoCompletion(TodoEntity todoEntity);
 
-  void delete(TodoEntity todo);
+  void deleteTodo(TodoEntity todo);
 
-  void add(TodoEntity todo);
+  void addTodo(TodoEntity todo);
 }
 
 /// A contract class containing all states of the TodoListBloC.
@@ -47,39 +47,45 @@ class TodoListBloc extends $TodoListBloc {
       errorState.map((error) => error.toString());
 
   @override
-  Stream<Result<List<TodoEntity>>> _mapToTodoListState() =>
-      _$fetchDataEvent.startWith(null).switchMap(
-            (_) => _repository.todos().asResultStream(),
-          );
+  Stream<Result<List<TodoEntity>>> _mapToTodoListState() => _$fetchTodosEvent
+      .startWith(null)
+      .switchMap(
+        (_) => _repository.todos().asResultStream(),
+      )
+      .setResultStateHandler(this);
 
   @override
   PublishConnectableStream<void> _mapToTodoCompletedState() =>
-      _$toggleCompletionEvent
-          .switchMap(
-            (todo) => _repository
-                .updateTodo(
-                  todo.copyWith(complete: !todo.complete),
-                )
-                .asStream(),
-          )
+      _$toggleTodoCompletionEvent
+          .switchMap((todo) => _repository
+              .updateTodo(
+                todo.copyWith(complete: !todo.complete),
+              )
+              .asResultStream())
+          .setResultStateHandler(this)
+          .whereSuccess()
           .publish();
 
   @override
-  PublishConnectableStream<TodoEntity> _mapToTodoDeletedState() => _$deleteEvent
-      .switchMap(
-        (todo) => _repository
-            .deleteTodo(
-              [todo.id],
-            )
-            .then((_) => todo)
-            .asStream(),
-      )
-      .publish();
+  PublishConnectableStream<TodoEntity> _mapToTodoDeletedState() =>
+      _$deleteTodoEvent
+          .switchMap((todo) => _repository
+              .deleteTodo(
+                [todo.id],
+              )
+              .then((_) => todo)
+              .asResultStream())
+          .setResultStateHandler(this)
+          .whereSuccess()
+          .publish();
 
   @override
-  PublishConnectableStream<TodoEntity> _mapToTodoAddedState() => _$addEvent
+  PublishConnectableStream<TodoEntity> _mapToTodoAddedState() => _$addTodoEvent
       .switchMap(
-        (todo) => _repository.addNewTodo(todo).then((_) => todo).asStream(),
+        (todo) =>
+            _repository.addNewTodo(todo).then((_) => todo).asResultStream(),
       )
+      .setResultStateHandler(this)
+      .whereSuccess()
       .publish();
 }
