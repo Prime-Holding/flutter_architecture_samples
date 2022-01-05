@@ -71,11 +71,7 @@ class TodoListPage extends StatelessWidget {
                   //   ));
                   // }
                 },
-                onCheckboxChanged: (_) {
-                  // todosBloc.add(
-                  //   UpdateTodo(todo.copyWith(complete: !todo.complete)),
-                  // );
-                },
+                onCheckboxChanged: (_) => bloc.events.toggleCompletion(todo),
               );
             },
           );

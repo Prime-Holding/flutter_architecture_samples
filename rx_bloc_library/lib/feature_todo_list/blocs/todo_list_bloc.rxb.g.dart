@@ -22,6 +22,9 @@ abstract class $TodoListBloc extends RxBlocBase
   /// Тhe [Subject] where events sink to by calling [fetchData]
   final _$fetchDataEvent = PublishSubject<void>();
 
+  /// Тhe [Subject] where events sink to by calling [toggleCompletion]
+  final _$toggleCompletionEvent = PublishSubject<TodoEntity>();
+
   /// The state of [errors] implemented in [_mapToErrorsState]
   late final Stream<String> _errorsState = _mapToErrorsState();
 
@@ -29,8 +32,16 @@ abstract class $TodoListBloc extends RxBlocBase
   late final Stream<Result<List<TodoEntity>>> _todoListState =
       _mapToTodoListState();
 
+  /// The state of [todoCompleted] implemented in [_mapToTodoCompletedState]
+  late final PublishConnectableStream<void> _todoCompletedState =
+      _mapToTodoCompletedState();
+
   @override
   void fetchData() => _$fetchDataEvent.add(null);
+
+  @override
+  void toggleCompletion(TodoEntity todoEntity) =>
+      _$toggleCompletionEvent.add(todoEntity);
 
   @override
   Stream<String> get errors => _errorsState;
@@ -38,9 +49,14 @@ abstract class $TodoListBloc extends RxBlocBase
   @override
   Stream<Result<List<TodoEntity>>> get todoList => _todoListState;
 
+  @override
+  PublishConnectableStream<void> get todoCompleted => _todoCompletedState;
+
   Stream<String> _mapToErrorsState();
 
   Stream<Result<List<TodoEntity>>> _mapToTodoListState();
+
+  PublishConnectableStream<void> _mapToTodoCompletedState();
 
   @override
   TodoListBlocEvents get events => this;
@@ -51,6 +67,7 @@ abstract class $TodoListBloc extends RxBlocBase
   @override
   void dispose() {
     _$fetchDataEvent.close();
+    _$toggleCompletionEvent.close();
     _compositeSubscription.dispose();
     super.dispose();
   }
