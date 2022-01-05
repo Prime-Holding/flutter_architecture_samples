@@ -24,6 +24,7 @@ class TodoListPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           _buildErrorListener(),
+          _buildDeletedListener(),
           Expanded(child: _buildDataContainer()),
         ],
       );
@@ -33,49 +34,26 @@ class TodoListPage extends StatelessWidget {
         state: (bloc) => bloc.states.todoList,
         buildLoading: (ctx, bloc) => LoadingIndicator(),
         buildError: (ctx, error, bloc) => Text(error.toString()),
-        buildSuccess: (ctx, todos, bloc) {
-          final localizations = ArchSampleLocalizations.of(ctx);
-
-          return ListView.builder(
-            key: ArchSampleKeys.todoList,
-            itemCount: todos.length,
-            itemBuilder: (BuildContext context, int index) {
-              final todo = todos[index];
-              return TodoItem(
-                todo: todo,
-                onDismissed: (_) {
-                  // todosBloc.add(DeleteTodo(todo));
-                  Scaffold.of(context).showSnackBar(DeleteTodoSnackBar(
-                    key: ArchSampleKeys.snackbar,
-                    todo: todo,
-                    onUndo: () {}, //=>  todosBloc.add(AddTodo(todo)),
-                    localizations: localizations,
-                  ));
-                },
-                onTap: () async {
-                  final removedTodo =
-                      await Navigator.of(context).push<TodoEntity>(
-                    MaterialPageRoute(builder: (_) {
-                      return TodoDetailsPage.withDependencies(
-                        context,
-                        id: todo.id,
-                      );
-                    }),
+        buildSuccess: (ctx, todos, bloc) => ListView.builder(
+          key: ArchSampleKeys.todoList,
+          itemCount: todos.length,
+          itemBuilder: (BuildContext context, int index) {
+            final todo = todos[index];
+            return TodoItem(
+              todo: todo,
+              onDismissed: (_) => bloc.events.delete(todo),
+              onTap: () async => await Navigator.of(context).push<TodoEntity>(
+                MaterialPageRoute(builder: (_) {
+                  return TodoDetailsPage.withDependencies(
+                    context,
+                    id: todo.id,
                   );
-                  // if (removedTodo != null) {
-                  //   Scaffold.of(context).showSnackBar(DeleteTodoSnackBar(
-                  //     key: ArchSampleKeys.snackbar,
-                  //     todo: todo,
-                  //     onUndo: () => todosBloc.add(AddTodo(todo)),
-                  //     localizations: localizations,
-                  //   ));
-                  // }
-                },
-                onCheckboxChanged: (_) => bloc.events.toggleCompletion(todo),
-              );
-            },
-          );
-        },
+                }),
+              ),
+              onCheckboxChanged: (_) => bloc.events.toggleCompletion(todo),
+            );
+          },
+        ),
       );
 
   Widget _buildErrorListener() => RxBlocListener<TodoListBlocType, String>(
@@ -87,5 +65,17 @@ class TodoListPage extends StatelessWidget {
             behavior: SnackBarBehavior.floating,
           ),
         ),
+      );
+
+  Widget _buildDeletedListener() =>
+      RxBlocListener<TodoListBlocType, TodoEntity>(
+        state: (bloc) => bloc.states.todoDeleted,
+        listener: (context, todo) =>
+            ScaffoldMessenger.of(context).showSnackBar(DeleteTodoSnackBar(
+          key: ArchSampleKeys.snackbar,
+          todo: todo!,
+          onUndo: () => context.read<TodoListBlocType>().events.add(todo!),
+          localizations: ArchSampleLocalizations.of(context),
+        )),
       );
 }

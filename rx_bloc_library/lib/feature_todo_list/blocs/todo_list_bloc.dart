@@ -7,10 +7,13 @@ part 'todo_list_bloc.rxb.g.dart';
 
 /// A contract class containing all events of the TodoListBloC.
 abstract class TodoListBlocEvents {
-  /// TODO: Document the event
   void fetchData();
 
   void toggleCompletion(TodoEntity todoEntity);
+
+  void delete(TodoEntity todo);
+
+  void add(TodoEntity todo);
 }
 
 /// A contract class containing all states of the TodoListBloC.
@@ -21,6 +24,10 @@ abstract class TodoListBlocStates {
   Stream<Result<List<TodoEntity>>> get todoList;
 
   PublishConnectableStream<void> get todoCompleted;
+
+  PublishConnectableStream<TodoEntity> get todoDeleted;
+
+  PublishConnectableStream<TodoEntity> get todoAdded;
 }
 
 @RxBloc()
@@ -29,6 +36,8 @@ class TodoListBloc extends $TodoListBloc {
     ReactiveTodosRepository repository,
   ) : _repository = repository {
     todoCompleted.connect().addTo(_compositeSubscription);
+    todoDeleted.connect().addTo(_compositeSubscription);
+    todoAdded.connect().addTo(_compositeSubscription);
   }
 
   final ReactiveTodosRepository _repository;
@@ -54,4 +63,23 @@ class TodoListBloc extends $TodoListBloc {
                 .asStream(),
           )
           .publish();
+
+  @override
+  PublishConnectableStream<TodoEntity> _mapToTodoDeletedState() => _$deleteEvent
+      .switchMap(
+        (todo) => _repository
+            .deleteTodo(
+              [todo.id],
+            )
+            .then((_) => todo)
+            .asStream(),
+      )
+      .publish();
+
+  @override
+  PublishConnectableStream<TodoEntity> _mapToTodoAddedState() => _$addEvent
+      .switchMap(
+        (todo) => _repository.addNewTodo(todo).then((_) => todo).asStream(),
+      )
+      .publish();
 }
