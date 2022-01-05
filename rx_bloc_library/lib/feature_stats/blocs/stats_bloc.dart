@@ -1,5 +1,7 @@
 import 'package:rx_bloc/rx_bloc.dart';
+import 'package:rx_bloc_library/base/models/models.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:todos_repository_core/todos_repository_core.dart';
 
 part 'stats_bloc.rxb.g.dart';
 
@@ -11,30 +13,17 @@ abstract class StatsBlocEvents {
 
 /// A contract class containing all states of the StatsBloC.
 abstract class StatsBlocStates {
-  /// The loading state
-  Stream<bool> get isLoading;
-
   /// The error state
   Stream<String> get errors;
 
-  /// TODO: Document the state
-  Stream<Result<String>> get data;
+  Stream<Result<Stats>> get stats;
 }
 
 @RxBloc()
 class StatsBloc extends $StatsBloc {
-  @override
-  Stream<Result<String>> _mapToDataState() => _$fetchDataEvent
-      .startWith(null)
-      .throttleTime(const Duration(milliseconds: 200))
-      .switchMap((value) async* {
-        ///TODO: Replace the code below with a repository invocation
-        yield Result<String>.loading();
-        await Future.delayed(const Duration(seconds: 1));
-        yield Result<String>.success('Stats');
-      })
-      .setResultStateHandler(this)
-      .shareReplay(maxSize: 1);
+  StatsBloc(ReactiveTodosRepository repository) : _repository = repository;
+
+  final ReactiveTodosRepository _repository;
 
   /// TODO: Implement error event-to-state logic
   @override
@@ -42,5 +31,17 @@ class StatsBloc extends $StatsBloc {
       errorState.map((error) => error.toString());
 
   @override
-  Stream<bool> _mapToIsLoadingState() => loadingState;
+  Stream<Result<Stats>> _mapToStatsState() => _$fetchDataEvent
+      .startWith(null)
+      .switchMap(
+        (value) => _repository
+            .todos()
+            .map(
+              (list) => Stats(
+                numActive: list.where((element) => !element.complete).length,
+                numCompleted: list.where((element) => element.complete).length,
+              ),
+            )
+            .asResultStream(),
+      );
 }

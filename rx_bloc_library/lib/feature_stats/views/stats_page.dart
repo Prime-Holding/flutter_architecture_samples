@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rx_bloc/flutter_rx_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:rx_bloc_library/base/models/models.dart';
+import 'package:rx_bloc_library/base/rx_bloc_library_keys.dart';
+import 'package:rx_bloc_library/base/widgets/loading_indicator.dart';
+import 'package:todos_app_core/todos_app_core.dart';
 
 import '../blocs/stats_bloc.dart';
 import '../di/stats_dependencies.dart';
@@ -20,24 +24,53 @@ class StatsPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           _buildErrorListener(),
-          Center(child: _buildDataContainer()),
-        ],
-      );
-
-  AppBar _buildAppBar(BuildContext context) => AppBar(
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: context.read<StatsBlocType>().events.fetchData,
+          RxResultBuilder<StatsBlocType, Stats>(
+            state: (bloc) => bloc.states.stats,
+            buildLoading: (context, bloc) => LoadingIndicator(
+              key: RxBlocLibraryKeys.statsLoadingIndicator,
+            ),
+            buildError: (context, exception, bloc) => Container(),
+            buildSuccess: (context, state, bloc) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 8.0),
+                      child: Text(
+                        ArchSampleLocalizations.of(context).completedTodos,
+                        style: Theme.of(context).textTheme.subtitle1,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 24.0),
+                      child: Text(
+                        '${state.numCompleted}',
+                        key: ArchSampleKeys.statsNumCompleted,
+                        style: Theme.of(context).textTheme.subtitle2,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 8.0),
+                      child: Text(
+                        ArchSampleLocalizations.of(context).activeTodos,
+                        style: Theme.of(context).textTheme.subtitle1,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 24.0),
+                      child: Text(
+                        '${state.numActive}',
+                        key: ArchSampleKeys.statsNumActive,
+                        style: Theme.of(context).textTheme.subtitle2,
+                      ),
+                    )
+                  ],
+                ),
+              );
+            },
           ),
         ],
-      );
-
-  Widget _buildDataContainer() => RxResultBuilder<StatsBlocType, String>(
-        state: (bloc) => bloc.states.data,
-        buildLoading: (ctx, bloc) => const CircularProgressIndicator(),
-        buildError: (ctx, error, bloc) => Text(error.toString()),
-        buildSuccess: (ctx, state, bloc) => Text(state),
       );
 
   Widget _buildErrorListener() => RxBlocListener<StatsBlocType, String>(

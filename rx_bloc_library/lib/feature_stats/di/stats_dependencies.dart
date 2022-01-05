@@ -24,7 +24,7 @@ class StatsDependencies {
 
   late final List<RxBlocProvider> _blocs = [
     RxBlocProvider<StatsBlocType>(
-      create: (context) => StatsBloc(),
+      create: (context) => StatsBloc(context.read()),
     ),
   ];
 }

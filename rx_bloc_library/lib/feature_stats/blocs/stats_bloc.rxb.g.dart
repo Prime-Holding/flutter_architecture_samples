@@ -22,32 +22,24 @@ abstract class $StatsBloc extends RxBlocBase
   /// Тhe [Subject] where events sink to by calling [fetchData]
   final _$fetchDataEvent = PublishSubject<void>();
 
-  /// The state of [isLoading] implemented in [_mapToIsLoadingState]
-  late final Stream<bool> _isLoadingState = _mapToIsLoadingState();
-
   /// The state of [errors] implemented in [_mapToErrorsState]
   late final Stream<String> _errorsState = _mapToErrorsState();
 
-  /// The state of [data] implemented in [_mapToDataState]
-  late final Stream<Result<String>> _dataState = _mapToDataState();
+  /// The state of [stats] implemented in [_mapToStatsState]
+  late final Stream<Result<Stats>> _statsState = _mapToStatsState();
 
   @override
   void fetchData() => _$fetchDataEvent.add(null);
 
   @override
-  Stream<bool> get isLoading => _isLoadingState;
-
-  @override
   Stream<String> get errors => _errorsState;
 
   @override
-  Stream<Result<String>> get data => _dataState;
-
-  Stream<bool> _mapToIsLoadingState();
+  Stream<Result<Stats>> get stats => _statsState;
 
   Stream<String> _mapToErrorsState();
 
-  Stream<Result<String>> _mapToDataState();
+  Stream<Result<Stats>> _mapToStatsState();
 
   @override
   StatsBlocEvents get events => this;
