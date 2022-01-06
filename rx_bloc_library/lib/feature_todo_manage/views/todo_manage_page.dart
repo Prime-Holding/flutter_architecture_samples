@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rx_bloc/flutter_rx_bloc.dart';
 import 'package:flutter_rx_bloc/rx_form.dart';
 import 'package:provider/provider.dart';
+import 'package:rx_bloc_library/base/widgets/error_snackbar_listener.dart';
 import 'package:todos_app_core/todos_app_core.dart';
 import 'package:todos_repository_core/todos_repository_core.dart';
 
@@ -47,14 +48,14 @@ class TodoManagePage extends StatelessWidget {
         padding: EdgeInsets.all(16.0),
         child: Column(
           children: [
-            _buildErrorListener(),
-            _buildSaveListener(),
+            ErrorSnackBarListener<TodoManageBlocType>(
+              errorState: (bloc) => bloc.states.errors,
+            ),
+            TodoSavedListener(),
             RxTextFormFieldBuilder<TodoManageBlocType>(
               state: (bloc) => bloc.states.task,
               showErrorState: (bloc) => Stream.empty(),
-              onChanged: (bloc, value) {
-                bloc.events.setTask(value);
-              },
+              onChanged: (bloc, value) => bloc.events.setTask(value),
               builder: (fieldState) => TextFormField(
                 key: ArchSampleKeys.taskField,
                 autofocus: !isEditing,
@@ -62,6 +63,8 @@ class TodoManagePage extends StatelessWidget {
                 decoration: fieldState.decoration.copyWith(
                   hintText: localizations.newTodoHint,
                 ),
+
+                ///TODO: move the validation logic to the BloC
                 // validator: (val) {
                 //   return val.trim().isEmpty
                 //       ? localizations.emptyTodoError
@@ -74,9 +77,7 @@ class TodoManagePage extends StatelessWidget {
             RxTextFormFieldBuilder<TodoManageBlocType>(
               state: (bloc) => bloc.states.note,
               showErrorState: (bloc) => Stream.empty(),
-              onChanged: (bloc, value) {
-                bloc.events.setNote(value);
-              },
+              onChanged: (bloc, value) => bloc.events.setNote(value),
               builder: (fieldState) => TextFormField(
                 key: ArchSampleKeys.noteField,
                 maxLines: 10,
@@ -90,29 +91,42 @@ class TodoManagePage extends StatelessWidget {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        key:
-            isEditing ? ArchSampleKeys.saveTodoFab : ArchSampleKeys.saveNewTodo,
-        tooltip: isEditing ? localizations.saveChanges : localizations.addTodo,
-        child: Icon(isEditing ? Icons.check : Icons.add),
-        onPressed: () => context.read<TodoManageBlocType>().events.save(),
+      floatingActionButton: TodoSaveButton(
+        isEditing: isEditing,
       ),
     );
   }
+}
 
-  Widget _buildSaveListener() => RxBlocListener<TodoManageBlocType, TodoEntity>(
+class TodoSaveButton extends StatelessWidget {
+  const TodoSaveButton({
+    Key? key,
+    required this.isEditing,
+  }) : super(key: key);
+
+  final bool isEditing;
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = ArchSampleLocalizations.of(context);
+    return FloatingActionButton(
+      key: isEditing ? ArchSampleKeys.saveTodoFab : ArchSampleKeys.saveNewTodo,
+      tooltip: isEditing ? localizations.saveChanges : localizations.addTodo,
+      child: Icon(isEditing ? Icons.check : Icons.add),
+      onPressed: () => context.read<TodoManageBlocType>().events.save(),
+    );
+  }
+}
+
+class TodoSavedListener extends StatelessWidget {
+  const TodoSavedListener({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) =>
+      RxBlocListener<TodoManageBlocType, TodoEntity>(
         state: (bloc) => bloc.states.saved,
         listener: (context, todoEntity) => Navigator.of(context).pop(),
-      );
-
-  Widget _buildErrorListener() => RxBlocListener<TodoManageBlocType, String>(
-        state: (bloc) => bloc.states.errors,
-        listener: (context, errorMessage) =>
-            ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(errorMessage ?? ''),
-            behavior: SnackBarBehavior.floating,
-          ),
-        ),
       );
 }

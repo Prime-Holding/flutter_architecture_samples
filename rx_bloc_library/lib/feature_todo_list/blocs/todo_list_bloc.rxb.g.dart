@@ -31,9 +31,6 @@ abstract class $TodoListBloc extends RxBlocBase
   /// Тhe [Subject] where events sink to by calling [addTodo]
   final _$addTodoEvent = PublishSubject<TodoEntity>();
 
-  /// The state of [errors] implemented in [_mapToErrorsState]
-  late final Stream<String> _errorsState = _mapToErrorsState();
-
   /// The state of [todoList] implemented in [_mapToTodoListState]
   late final Stream<Result<List<TodoEntity>>> _todoListState =
       _mapToTodoListState();
@@ -64,9 +61,6 @@ abstract class $TodoListBloc extends RxBlocBase
   void addTodo(TodoEntity todo) => _$addTodoEvent.add(todo);
 
   @override
-  Stream<String> get errors => _errorsState;
-
-  @override
   Stream<Result<List<TodoEntity>>> get todoList => _todoListState;
 
   @override
@@ -77,8 +71,6 @@ abstract class $TodoListBloc extends RxBlocBase
 
   @override
   PublishConnectableStream<TodoEntity> get todoAdded => _todoAddedState;
-
-  Stream<String> _mapToErrorsState();
 
   Stream<Result<List<TodoEntity>>> _mapToTodoListState();
 

@@ -7,14 +7,13 @@ part 'stats_bloc.rxb.g.dart';
 
 /// A contract class containing all events of the StatsBloC.
 abstract class StatsBlocEvents {
-  /// TODO: Document the event
-  void fetchData();
+  void fetchStats();
 }
 
 /// A contract class containing all states of the StatsBloC.
 abstract class StatsBlocStates {
-  /// The error state
-  Stream<String> get errors;
+  @RxBlocIgnoreState()
+  Stream<Exception> get errors;
 
   Stream<Result<Stats>> get stats;
 }
@@ -25,13 +24,8 @@ class StatsBloc extends $StatsBloc {
 
   final ReactiveTodosRepository _repository;
 
-  /// TODO: Implement error event-to-state logic
   @override
-  Stream<String> _mapToErrorsState() =>
-      errorState.map((error) => error.toString());
-
-  @override
-  Stream<Result<Stats>> _mapToStatsState() => _$fetchDataEvent
+  Stream<Result<Stats>> _mapToStatsState() => _$fetchStatsEvent
       .startWith(null)
       .switchMap(
         (value) => _repository
@@ -43,5 +37,9 @@ class StatsBloc extends $StatsBloc {
               ),
             )
             .asResultStream(),
-      );
+      )
+      .setResultStateHandler(this);
+
+  @override
+  Stream<Exception> get errors => errorState;
 }

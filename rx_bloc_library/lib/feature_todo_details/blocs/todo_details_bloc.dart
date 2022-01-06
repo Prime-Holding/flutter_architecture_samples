@@ -3,12 +3,12 @@ import 'package:rx_bloc_library/base/extensions/todo_entity_extensions.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todos_repository_core/todos_repository_core.dart';
 
+import 'package:collection/collection.dart';
 part 'todo_details_bloc.rxb.g.dart';
 
 /// A contract class containing all events of the TodoDetailsBloC.
 abstract class TodoDetailsBlocEvents {
-  /// TODO: Document the event
-  void fetchData();
+  void fetchTodo();
 
   void setCompletion(bool complete);
 
@@ -17,12 +17,12 @@ abstract class TodoDetailsBlocEvents {
 
 /// A contract class containing all states of the TodoDetailsBloC.
 abstract class TodoDetailsBlocStates {
-  /// The error state
-  Stream<String> get errors;
+  @RxBlocIgnoreState()
+  Stream<Exception> get errors;
 
   Stream<TodoEntity> get todo;
 
-  Stream<bool> get completed;
+  PublishConnectableStream<bool> get completed;
 
   Stream<TodoEntity> get deleted;
 }
@@ -33,30 +33,28 @@ class TodoDetailsBloc extends $TodoDetailsBloc {
     ReactiveTodosRepository repository, {
     required String id,
   })  : _repository = repository,
-        _id = id;
+        _id = id {
+    completed.connect().addTo(_compositeSubscription);
+  }
 
   final ReactiveTodosRepository _repository;
   final String _id;
 
-  /// TODO: Implement error event-to-state logic
   @override
-  Stream<String> _mapToErrorsState() =>
-      errorState.map((error) => error.toString());
-
-  @override
-  Stream<TodoEntity> _mapToTodoState() => _$fetchDataEvent
+  Stream<TodoEntity> _mapToTodoState() => _$fetchTodoEvent
       .startWith(null)
       .switchMap(
         (value) => _repository
             .todos()
-            .map((todos) => todos.firstWhere((todo) => todo.id == _id))
+            .map((todos) => todos.firstWhereOrNull((todo) => todo.id == _id))
+            .whereType<TodoEntity>()
             .asResultStream(),
       )
       .setResultStateHandler(this)
       .whereSuccess();
 
   @override
-  Stream<bool> _mapToCompletedState() => _$setCompletionEvent
+  PublishConnectableStream<bool> _mapToCompletedState() => _$setCompletionEvent
       .withLatestFrom<TodoEntity, TodoEntity>(
         todo,
         (complete, todo) => todo.copyWith(complete: complete),
@@ -70,7 +68,8 @@ class TodoDetailsBloc extends $TodoDetailsBloc {
       )
       .setResultStateHandler(this)
       .whereSuccess()
-      .map((todo) => todo.complete);
+      .map((todo) => todo.complete)
+      .publish();
 
   @override
   Stream<TodoEntity> _mapToDeletedState() => _$deleteEvent
@@ -87,4 +86,7 @@ class TodoDetailsBloc extends $TodoDetailsBloc {
       )
       .setResultStateHandler(this)
       .whereSuccess();
+
+  @override
+  Stream<Exception> get errors => errorState;
 }

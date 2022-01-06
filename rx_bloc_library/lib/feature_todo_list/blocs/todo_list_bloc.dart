@@ -18,8 +18,8 @@ abstract class TodoListBlocEvents {
 
 /// A contract class containing all states of the TodoListBloC.
 abstract class TodoListBlocStates {
-  /// The error state
-  Stream<String> get errors;
+  @RxBlocIgnoreState()
+  Stream<Exception> get errors;
 
   Stream<Result<List<TodoEntity>>> get todoList;
 
@@ -41,10 +41,6 @@ class TodoListBloc extends $TodoListBloc {
   }
 
   final ReactiveTodosRepository _repository;
-
-  @override
-  Stream<String> _mapToErrorsState() =>
-      errorState.map((error) => error.toString());
 
   @override
   Stream<Result<List<TodoEntity>>> _mapToTodoListState() => _$fetchTodosEvent
@@ -88,4 +84,7 @@ class TodoListBloc extends $TodoListBloc {
       .setResultStateHandler(this)
       .whereSuccess()
       .publish();
+
+  @override
+  Stream<Exception> get errors => errorState;
 }

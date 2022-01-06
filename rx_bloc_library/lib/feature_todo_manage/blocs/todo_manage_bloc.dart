@@ -18,8 +18,8 @@ abstract class TodoManageBlocEvents {
 
 /// A contract class containing all states of the TodoManageBloC.
 abstract class TodoManageBlocStates {
-  /// The error state
-  Stream<String> get errors;
+  @RxBlocIgnoreState()
+  Stream<Exception> get errors;
 
   Stream<String> get task;
 
@@ -40,11 +40,6 @@ class TodoManageBloc extends $TodoManageBloc {
   final TodoEntity _todoEntity;
   final ReactiveTodosRepository _repository;
   final bool _isEditing;
-
-  /// TODO: Implement error event-to-state logic
-  @override
-  Stream<String> _mapToErrorsState() =>
-      errorState.map((error) => error.toString());
 
   @override
   Stream<String> _mapToNoteState() => _$setNoteEvent
@@ -85,4 +80,7 @@ class TodoManageBloc extends $TodoManageBloc {
         task: _$setTaskEvent.hasValue ? _$setTaskEvent.value : '',
         note: _$setNoteEvent.hasValue ? _$setNoteEvent.value : '',
       );
+
+  @override
+  Stream<Exception> get errors => errorState;
 }

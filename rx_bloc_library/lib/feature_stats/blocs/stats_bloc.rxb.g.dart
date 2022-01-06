@@ -19,25 +19,17 @@ abstract class $StatsBloc extends RxBlocBase
     implements StatsBlocEvents, StatsBlocStates, StatsBlocType {
   final _compositeSubscription = CompositeSubscription();
 
-  /// Тhe [Subject] where events sink to by calling [fetchData]
-  final _$fetchDataEvent = PublishSubject<void>();
-
-  /// The state of [errors] implemented in [_mapToErrorsState]
-  late final Stream<String> _errorsState = _mapToErrorsState();
+  /// Тhe [Subject] where events sink to by calling [fetchStats]
+  final _$fetchStatsEvent = PublishSubject<void>();
 
   /// The state of [stats] implemented in [_mapToStatsState]
   late final Stream<Result<Stats>> _statsState = _mapToStatsState();
 
   @override
-  void fetchData() => _$fetchDataEvent.add(null);
-
-  @override
-  Stream<String> get errors => _errorsState;
+  void fetchStats() => _$fetchStatsEvent.add(null);
 
   @override
   Stream<Result<Stats>> get stats => _statsState;
-
-  Stream<String> _mapToErrorsState();
 
   Stream<Result<Stats>> _mapToStatsState();
 
@@ -49,7 +41,7 @@ abstract class $StatsBloc extends RxBlocBase
 
   @override
   void dispose() {
-    _$fetchDataEvent.close();
+    _$fetchStatsEvent.close();
     _compositeSubscription.dispose();
     super.dispose();
   }

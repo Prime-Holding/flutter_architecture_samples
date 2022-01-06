@@ -16,11 +16,8 @@ class StatsDependencies {
   final BuildContext context;
 
   late List<SingleChildWidget> providers = [
-    ..._repositories,
     ..._blocs,
   ];
-
-  late final List<Provider> _repositories = [];
 
   late final List<RxBlocProvider> _blocs = [
     RxBlocProvider<StatsBlocType>(
