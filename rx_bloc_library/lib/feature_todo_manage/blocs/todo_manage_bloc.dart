@@ -7,24 +7,42 @@ part 'todo_manage_bloc.rxb.g.dart';
 
 /// A contract class containing all events of the TodoManageBloC.
 abstract class TodoManageBlocEvents {
+  /// Save (update or create) a [TodoEntity]
+  ///
+  /// Subscribe for state changes in [TodoManageBlocStates.saved]
   void save();
 
+  /// Set the [TodoEntity.task]. To persist the entity call [save].
+  ///
+  /// Subscribe for state changes in [TodoManageBlocStates.task]
   @RxBlocEvent(type: RxBlocEventType.behaviour)
   void setTask(String task);
 
+  /// Set the [TodoEntity.note]. To persist the entity call [save].
+  ///
+  /// Subscribe for state changes in [TodoManageBlocStates.note]
   @RxBlocEvent(type: RxBlocEventType.behaviour)
   void setNote(String note);
 }
 
 /// A contract class containing all states of the TodoManageBloC.
 abstract class TodoManageBlocStates {
+  /// The state where all errors of the async operations in this bloc
+  /// are reported.
   @RxBlocIgnoreState()
   Stream<Exception> get errors;
 
+  /// The state of the current [TodoEntity.task]
+  ///
+  /// This state is controlled by [TodoManageBlocEvents.setTask]
   Stream<String> get task;
 
+  /// The state of the current [TodoEntity.note]
+  ///
+  /// /// This state is controlled by [TodoManageBlocEvents.setNote]
   Stream<String> get note;
 
+  /// The state of the successfully saved (created or updated) [TaskEntity]
   Stream<TodoEntity> get saved;
 }
 

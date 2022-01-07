@@ -78,8 +78,7 @@ class TodoDetailsPage extends StatelessWidget {
                       child: Checkbox(
                         key: RxBlocLibraryKeys.detailsScreenCheckBox,
                         value: todo.complete,
-                        onChanged: (_) =>
-                            bloc.events.setCompletion(!todo.complete),
+                        onChanged: (_) => bloc.events.toggleCompletion(),
                       ),
                     ),
                     Expanded(

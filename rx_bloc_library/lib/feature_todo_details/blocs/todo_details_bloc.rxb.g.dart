@@ -25,8 +25,8 @@ abstract class $TodoDetailsBloc extends RxBlocBase
   /// Тhe [Subject] where events sink to by calling [fetchTodo]
   final _$fetchTodoEvent = PublishSubject<void>();
 
-  /// Тhe [Subject] where events sink to by calling [setCompletion]
-  final _$setCompletionEvent = PublishSubject<bool>();
+  /// Тhe [Subject] where events sink to by calling [toggleCompletion]
+  final _$toggleCompletionEvent = PublishSubject<void>();
 
   /// Тhe [Subject] where events sink to by calling [delete]
   final _$deleteEvent = PublishSubject<void>();
@@ -45,7 +45,7 @@ abstract class $TodoDetailsBloc extends RxBlocBase
   void fetchTodo() => _$fetchTodoEvent.add(null);
 
   @override
-  void setCompletion(bool complete) => _$setCompletionEvent.add(complete);
+  void toggleCompletion() => _$toggleCompletionEvent.add(null);
 
   @override
   void delete() => _$deleteEvent.add(null);
@@ -74,7 +74,7 @@ abstract class $TodoDetailsBloc extends RxBlocBase
   @override
   void dispose() {
     _$fetchTodoEvent.close();
-    _$setCompletionEvent.close();
+    _$toggleCompletionEvent.close();
     _$deleteEvent.close();
     _compositeSubscription.dispose();
     super.dispose();

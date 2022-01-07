@@ -7,14 +7,22 @@ part 'stats_bloc.rxb.g.dart';
 
 /// A contract class containing all events of the StatsBloC.
 abstract class StatsBlocEvents {
+  /// Fetch the todo stats.
+  ///
+  /// Subscribe for state changes in [StatsBlocStates.stats]
   void fetchStats();
 }
 
 /// A contract class containing all states of the StatsBloC.
 abstract class StatsBlocStates {
+  /// The state where all errors of the async operations in this bloc
+  /// are reported.
   @RxBlocIgnoreState()
   Stream<Exception> get errors;
 
+  /// The state of the todo stats.
+  ///
+  /// This state is refreshed by [StatsBlocEvents.fetchStats]
   Stream<Result<Stats>> get stats;
 }
 

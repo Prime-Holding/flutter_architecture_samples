@@ -7,26 +7,58 @@ part 'todo_list_bloc.rxb.g.dart';
 
 /// A contract class containing all events of the TodoListBloC.
 abstract class TodoListBlocEvents {
+  /// Fetch the list of all todos.
+  ///
+  /// Subscribe for state changes in [TodoListBlocStates.todoList]
   void fetchTodos();
 
+  /// Toggle the [TodoEntity.complete] (complete/incomplete) of the given [todoEntity].
+  ///
+  /// Subscribe for state changes in [TodoListBlocStates.todoCompleted]
   void toggleTodoCompletion(TodoEntity todoEntity);
 
+  /// Delete the give [todo].
+  ///
+  /// Subscribe for state changes in [TodoListBlocStates.todoDeleted]
   void deleteTodo(TodoEntity todo);
 
+  /// Persist the give [todo].
+  ///
+  /// Subscribe for state changes in
+  /// - [TodoListBlocStates.todoAdded]
+  /// - [TodoListBlocStates.todoList]
   void addTodo(TodoEntity todo);
 }
 
 /// A contract class containing all states of the TodoListBloC.
 abstract class TodoListBlocStates {
+  /// The state where all errors of the async operations in this bloc
+  /// are reported.
   @RxBlocIgnoreState()
   Stream<Exception> get errors;
 
+  /// The state of the all visible todos.
+  ///
+  /// This state is controlled by
+  /// - [TodoListBlocEvents.fetchTodos]
+  /// - [TodoListBlocEvents.toggleTodoCompletion]
+  /// - [TodoListBlocEvents.deleteTodo]
+  /// - [TodoListBlocEvents.addTodo]
   Stream<Result<List<TodoEntity>>> get todoList;
 
+  /// The state of the change of a [TodoEntity]
+  ///
+  /// This state is controlled by [TodoListBlocEvents.toggleTodoCompletion]
   PublishConnectableStream<void> get todoCompleted;
 
+  /// The state of a successfully deleted [TodoEntity]
+  ///
+  /// This state is controlled by [TodoListBlocEvents.deleteTodo]
   PublishConnectableStream<TodoEntity> get todoDeleted;
 
+  /// The state of the successfully added [TodoEntity].
+  ///
+  /// This state is controlled by [TodoListBlocEvents.addTodo]
   PublishConnectableStream<TodoEntity> get todoAdded;
 }
 

@@ -18,6 +18,8 @@ class HomeDependencies {
   late List<SingleChildWidget> providers = [
     ..._repositories,
     ..._blocs,
+
+    /// Feature specific services, use cases and utils could be added here
   ];
 
   late final List<Provider> _repositories = [];
