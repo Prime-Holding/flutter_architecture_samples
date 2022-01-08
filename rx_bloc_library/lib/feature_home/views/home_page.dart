@@ -23,20 +23,20 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RxBlocBuilder<HomeBlocType, AppTab>(
+    return RxBlocBuilder<HomeBlocType, AppTabModel>(
       state: (bloc) => bloc.states.selectedTab,
       builder: (context, tab, bloc) {
-        final activeTab = tab.data ?? AppTab.todos;
+        final activeTab = tab.data ?? AppTabModel.todos;
 
         return Scaffold(
           appBar: AppBar(
             title: Text(FlutterRxBlocLocalizations.of(context).appTitle),
             actions: [
-              FilterButton(visible: activeTab == AppTab.todos),
+              FilterButton(visible: activeTab == AppTabModel.todos),
               ExtraActions(),
             ],
           ),
-          body: activeTab == AppTab.todos
+          body: activeTab == AppTabModel.todos
               ? TodoListPage()
               : StatsPage.withDependencies(context),
           floatingActionButton: FloatingActionButton(

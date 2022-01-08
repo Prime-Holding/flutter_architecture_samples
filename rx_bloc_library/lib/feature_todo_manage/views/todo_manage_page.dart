@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rx_bloc/flutter_rx_bloc.dart';
 import 'package:flutter_rx_bloc/rx_form.dart';
 import 'package:provider/provider.dart';
+import 'package:rx_bloc_library/base/extensions/stream_translate_field_exception.dart';
 import 'package:rx_bloc_library/base/widgets/error_snackbar_listener.dart';
 import 'package:todos_app_core/todos_app_core.dart';
 import 'package:todos_repository_core/todos_repository_core.dart';
@@ -53,8 +54,8 @@ class TodoManagePage extends StatelessWidget {
             ),
             TodoSavedListener(),
             RxTextFormFieldBuilder<TodoManageBlocType>(
-              state: (bloc) => bloc.states.task,
-              showErrorState: (bloc) => Stream.empty(),
+              state: (bloc) => bloc.states.task.translateErrors(context),
+              showErrorState: (bloc) => bloc.states.showError,
               onChanged: (bloc, value) => bloc.events.setTask(value),
               builder: (fieldState) => TextFormField(
                 key: ArchSampleKeys.taskField,
@@ -63,14 +64,6 @@ class TodoManagePage extends StatelessWidget {
                 decoration: fieldState.decoration.copyWith(
                   hintText: localizations.newTodoHint,
                 ),
-
-                ///TODO: move the validation logic to the BloC
-                // validator: (val) {
-                //   return val.trim().isEmpty
-                //       ? localizations.emptyTodoError
-                //       : null;
-                // },
-                // onSaved: (value) => _task = value,
                 controller: fieldState.controller,
               ),
             ),

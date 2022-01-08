@@ -20,7 +20,7 @@ abstract class $HomeBloc extends RxBlocBase
   final _compositeSubscription = CompositeSubscription();
 
   /// Тhe [Subject] where events sink to by calling [selectTab]
-  final _$selectTabEvent = PublishSubject<AppTab>();
+  final _$selectTabEvent = PublishSubject<AppTabModel>();
 
   /// Тhe [Subject] where events sink to by calling [deleteTodoListCompleted]
   final _$deleteTodoListCompletedEvent = PublishSubject<void>();
@@ -29,7 +29,7 @@ abstract class $HomeBloc extends RxBlocBase
   final _$toggleTodoListCompletionEvent = PublishSubject<void>();
 
   /// The state of [selectedTab] implemented in [_mapToSelectedTabState]
-  late final Stream<AppTab> _selectedTabState = _mapToSelectedTabState();
+  late final Stream<AppTabModel> _selectedTabState = _mapToSelectedTabState();
 
   /// The state of [completeTodoListDeleted] implemented in
   /// [_mapToCompleteTodoListDeletedState]
@@ -47,7 +47,7 @@ abstract class $HomeBloc extends RxBlocBase
       _mapToAllTodoListCompleteState();
 
   @override
-  void selectTab(AppTab tab) => _$selectTabEvent.add(tab);
+  void selectTab(AppTabModel tab) => _$selectTabEvent.add(tab);
 
   @override
   void deleteTodoListCompleted() => _$deleteTodoListCompletedEvent.add(null);
@@ -56,7 +56,7 @@ abstract class $HomeBloc extends RxBlocBase
   void toggleTodoListCompletion() => _$toggleTodoListCompletionEvent.add(null);
 
   @override
-  Stream<AppTab> get selectedTab => _selectedTabState;
+  Stream<AppTabModel> get selectedTab => _selectedTabState;
 
   @override
   PublishConnectableStream<void> get completeTodoListDeleted =>
@@ -69,7 +69,7 @@ abstract class $HomeBloc extends RxBlocBase
   @override
   Stream<bool> get allTodoListComplete => _allTodoListCompleteState;
 
-  Stream<AppTab> _mapToSelectedTabState();
+  Stream<AppTabModel> _mapToSelectedTabState();
 
   PublishConnectableStream<void> _mapToCompleteTodoListDeletedState();
 

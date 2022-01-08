@@ -7,8 +7,8 @@ import 'package:todos_app_core/todos_app_core.dart';
 import 'package:rx_bloc_library/base/models/models.dart';
 
 class TabSelector extends StatelessWidget {
-  final AppTab activeTab;
-  final Function(AppTab) onTabSelected;
+  final AppTabModel activeTab;
+  final Function(AppTabModel) onTabSelected;
 
   TabSelector({
     required this.activeTab,
@@ -20,17 +20,17 @@ class TabSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       key: ArchSampleKeys.tabs,
-      currentIndex: AppTab.values.indexOf(activeTab),
-      onTap: (index) => onTabSelected(AppTab.values[index]),
-      items: AppTab.values.map((tab) {
+      currentIndex: AppTabModel.values.indexOf(activeTab),
+      onTap: (index) => onTabSelected(AppTabModel.values[index]),
+      items: AppTabModel.values.map((tab) {
         return BottomNavigationBarItem(
           icon: Icon(
-            tab == AppTab.todos ? Icons.list : Icons.show_chart,
-            key: tab == AppTab.todos
+            tab == AppTabModel.todos ? Icons.list : Icons.show_chart,
+            key: tab == AppTabModel.todos
                 ? ArchSampleKeys.todoTab
                 : ArchSampleKeys.statsTab,
           ),
-          title: Text(tab == AppTab.stats
+          title: Text(tab == AppTabModel.stats
               ? ArchSampleLocalizations.of(context).stats
               : ArchSampleLocalizations.of(context).todos),
         );

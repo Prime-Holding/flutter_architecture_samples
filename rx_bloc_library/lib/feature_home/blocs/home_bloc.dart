@@ -15,7 +15,7 @@ abstract class HomeBlocEvents {
   /// Select the [tap] that needs to be put on screen.
   ///
   /// Subscribe for state changes in [HomeBlocStates.selectedTab]
-  void selectTab(AppTab tab);
+  void selectTab(AppTabModel tab);
 
   /// Delete all completed [TodoEntity] list.
   ///
@@ -33,7 +33,7 @@ abstract class HomeBlocStates {
   /// The state of the currently selected tab.
   ///
   /// This state is controlled by [HomeBlocEvents.selectTab]
-  Stream<AppTab> get selectedTab;
+  Stream<AppTabModel> get selectedTab;
 
   /// The state of a successfully deleted completed [TodoEntity] list.
   ///
@@ -58,8 +58,8 @@ class HomeBloc extends $HomeBloc {
   final TodoListService _service;
 
   @override
-  Stream<AppTab> _mapToSelectedTabState() =>
-      _$selectTabEvent.startWith(AppTab.todos);
+  Stream<AppTabModel> _mapToSelectedTabState() =>
+      _$selectTabEvent.startWith(AppTabModel.todos);
 
   @override
   PublishConnectableStream<void> _mapToTodoListCompletedState() =>

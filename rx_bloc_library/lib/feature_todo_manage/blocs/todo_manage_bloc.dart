@@ -1,6 +1,8 @@
+import 'package:flutter_rx_bloc/rx_form.dart';
 import 'package:rx_bloc/rx_bloc.dart';
 import 'package:rx_bloc_library/base/extensions/todo_entity_extensions.dart';
 import 'package:rx_bloc_library/base/services/todo_list_service.dart';
+import 'package:rx_bloc_library/feature_todo_manage/services/todo_manage_service.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todos_repository_core/todos_repository_core.dart';
 
@@ -45,19 +47,25 @@ abstract class TodoManageBlocStates {
 
   /// The state of the successfully saved (created or updated) [TaskEntity]
   Stream<TodoEntity> get saved;
+
+  Stream<bool> get showError;
 }
 
 @RxBloc()
 class TodoManageBloc extends $TodoManageBloc {
   TodoManageBloc(
-    TodoListService service, {
+    TodoListService listService,
+    TodoManageService service, {
     required TodoEntity? todoEntity,
   })  : _todoEntity = todoEntity ?? TodoEntityX.empty(),
+        _listService = listService,
         _service = service,
         _isEditing = todoEntity != null;
 
   final TodoEntity _todoEntity;
-  final TodoListService _service;
+  final TodoListService _listService;
+  final TodoManageService _service;
+
   final bool _isEditing;
 
   @override
@@ -70,22 +78,24 @@ class TodoManageBloc extends $TodoManageBloc {
   Stream<String> _mapToTaskState() => _$setTaskEvent
       .startWith(_todoEntity.task)
       .distinct()
+      .map(_service.validateTask)
       .shareReplay(maxSize: 1);
 
   @override
   Stream<TodoEntity> _mapToSavedState() => _$saveEvent
       .throttleTime(Duration(seconds: 1))
+      .where((event) => _service.isTodoValid(_copyTodoWithEventsData()))
       .switchMap(
         (value) {
           final updatedEntity = _copyTodoWithEventsData();
 
           if (_isEditing) {
-            return _service
+            return _listService
                 .updateTodo(updatedEntity)
                 .then((value) => updatedEntity)
                 .asResultStream();
           }
-          return _service
+          return _listService
               .addNewTodo(updatedEntity)
               .then((value) => updatedEntity)
               .asResultStream();
@@ -95,11 +105,14 @@ class TodoManageBloc extends $TodoManageBloc {
       .whereSuccess()
       .share();
 
+  @override
+  Stream<bool> _mapToShowErrorState() => _$setTaskEvent.mapTo(true).skip(1);
+
+  @override
+  Stream<Exception> get errors => errorState;
+
   TodoEntity _copyTodoWithEventsData() => _todoEntity.copyWith(
         task: _$setTaskEvent.hasValue ? _$setTaskEvent.value : '',
         note: _$setNoteEvent.hasValue ? _$setNoteEvent.value : '',
       );
-
-  @override
-  Stream<Exception> get errors => errorState;
 }

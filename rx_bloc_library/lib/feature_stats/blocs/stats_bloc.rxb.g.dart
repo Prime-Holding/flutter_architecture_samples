@@ -23,15 +23,15 @@ abstract class $StatsBloc extends RxBlocBase
   final _$fetchStatsEvent = PublishSubject<void>();
 
   /// The state of [stats] implemented in [_mapToStatsState]
-  late final Stream<Result<Stats>> _statsState = _mapToStatsState();
+  late final Stream<Result<StatsModel>> _statsState = _mapToStatsState();
 
   @override
   void fetchStats() => _$fetchStatsEvent.add(null);
 
   @override
-  Stream<Result<Stats>> get stats => _statsState;
+  Stream<Result<StatsModel>> get stats => _statsState;
 
-  Stream<Result<Stats>> _mapToStatsState();
+  Stream<Result<StatsModel>> _mapToStatsState();
 
   @override
   StatsBlocEvents get events => this;

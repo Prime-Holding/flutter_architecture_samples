@@ -32,8 +32,8 @@ abstract class TodoListBlocEvents {
   void addTodo(TodoEntity todo);
 
   /// Filter the [TodoListBlocStates.todoList] by the give [filter]
-  @RxBlocEvent(type: RxBlocEventType.behaviour, seed: VisibilityFilter.all)
-  void filterBy(VisibilityFilter filter);
+  @RxBlocEvent(type: RxBlocEventType.behaviour, seed: VisibilityFilterModel.all)
+  void filterBy(VisibilityFilterModel filter);
 }
 
 /// A contract class containing all states of the TodoListBloC.
@@ -72,7 +72,7 @@ abstract class TodoListBlocStates {
   ///
   /// This state is controlled by [TodoListBlocEvents.filterBy]
   @RxBlocIgnoreState()
-  Stream<VisibilityFilter> get currentFilter;
+  Stream<VisibilityFilterModel> get currentFilter;
 }
 
 @RxBloc()
@@ -90,7 +90,7 @@ class TodoListBloc extends $TodoListBloc {
 
   @override
   ReplayConnectableStream<Result<List<TodoEntity>>> _mapToTodoListState() =>
-      Rx.combineLatest2<Result<List<TodoEntity>>, VisibilityFilter,
+      Rx.combineLatest2<Result<List<TodoEntity>>, VisibilityFilterModel,
           Result<List<TodoEntity>>>(
         _$fetchTodosEvent
             .startWith(null)
@@ -134,7 +134,7 @@ class TodoListBloc extends $TodoListBloc {
       .publish();
 
   @override
-  Stream<VisibilityFilter> get currentFilter => _$filterByEvent;
+  Stream<VisibilityFilterModel> get currentFilter => _$filterByEvent;
 
   @override
   Stream<Exception> get errors => errorState;

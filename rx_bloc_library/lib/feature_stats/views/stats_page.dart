@@ -28,7 +28,7 @@ class StatsPage extends StatelessWidget {
           ErrorSnackBarListener<StatsBlocType>(
             errorState: (bloc) => bloc.states.errors,
           ),
-          RxResultBuilder<StatsBlocType, Stats>(
+          RxResultBuilder<StatsBlocType, StatsModel>(
             state: (bloc) => bloc.states.stats,
             buildLoading: (context, bloc) => LoadingIndicator(
               key: RxBlocLibraryKeys.statsLoadingIndicator,

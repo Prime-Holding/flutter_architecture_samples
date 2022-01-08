@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license that can be found
 // in the LICENSE file.
 
-export 'app_tab.dart';
-export 'extra_action.dart';
-export 'visibility_filter.dart';
-export 'stats.dart';
+export 'app_tab_model.dart';
+export 'extra_action_model.dart';
+export 'visibility_filter_model.dart';
+export 'stats_model.dart';

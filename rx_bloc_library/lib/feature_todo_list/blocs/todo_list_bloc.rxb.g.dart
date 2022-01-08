@@ -33,7 +33,7 @@ abstract class $TodoListBloc extends RxBlocBase
 
   /// Тhe [Subject] where events sink to by calling [filterBy]
   final _$filterByEvent =
-      BehaviorSubject<VisibilityFilter>.seeded(VisibilityFilter.all);
+      BehaviorSubject<VisibilityFilterModel>.seeded(VisibilityFilterModel.all);
 
   /// The state of [todoList] implemented in [_mapToTodoListState]
   late final ReplayConnectableStream<Result<List<TodoEntity>>> _todoListState =
@@ -65,7 +65,7 @@ abstract class $TodoListBloc extends RxBlocBase
   void addTodo(TodoEntity todo) => _$addTodoEvent.add(todo);
 
   @override
-  void filterBy(VisibilityFilter filter) => _$filterByEvent.add(filter);
+  void filterBy(VisibilityFilterModel filter) => _$filterByEvent.add(filter);
 
   @override
   ReplayConnectableStream<Result<List<TodoEntity>>> get todoList =>

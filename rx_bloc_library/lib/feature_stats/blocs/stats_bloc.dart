@@ -23,7 +23,7 @@ abstract class StatsBlocStates {
   /// The state of the todo stats.
   ///
   /// This state is refreshed by [StatsBlocEvents.fetchStats]
-  Stream<Result<Stats>> get stats;
+  Stream<Result<StatsModel>> get stats;
 }
 
 @RxBloc()
@@ -33,13 +33,13 @@ class StatsBloc extends $StatsBloc {
   final TodoListService _service;
 
   @override
-  Stream<Result<Stats>> _mapToStatsState() => _$fetchStatsEvent
+  Stream<Result<StatsModel>> _mapToStatsState() => _$fetchStatsEvent
       .startWith(null)
       .switchMap(
         (value) => _service
             .todos()
             .map(
-              (list) => Stats(
+              (list) => StatsModel(
                 numActive: list.where((element) => !element.complete).length,
                 numCompleted: list.where((element) => element.complete).length,
               ),

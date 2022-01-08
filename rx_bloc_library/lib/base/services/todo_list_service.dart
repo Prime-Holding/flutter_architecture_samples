@@ -70,7 +70,7 @@ class TodoListService {
   /// Filter the [todoList] by the given [filter]
   Result<List<TodoEntity>> filterResultTodoListBy(
     Result<List<TodoEntity>> todoList,
-    VisibilityFilter filter,
+    VisibilityFilterModel filter,
   ) {
     if (todoList is ResultSuccess<List<TodoEntity>>) {
       return Result.success(filterTodoListBy(todoList.data, filter));
@@ -82,18 +82,18 @@ class TodoListService {
   /// Filter the [todoList] by the given [filter]
   List<TodoEntity> filterTodoListBy(
     List<TodoEntity> todoList,
-    VisibilityFilter filter,
+    VisibilityFilterModel filter,
   ) =>
       todoList.where((todo) {
-        if (filter == VisibilityFilter.all) {
+        if (filter == VisibilityFilterModel.all) {
           return true;
         }
 
-        if (filter == VisibilityFilter.active && !todo.complete) {
+        if (filter == VisibilityFilterModel.active && !todo.complete) {
           return true;
         }
 
-        if (filter == VisibilityFilter.completed && todo.complete) {
+        if (filter == VisibilityFilterModel.completed && todo.complete) {
           return true;
         }
 

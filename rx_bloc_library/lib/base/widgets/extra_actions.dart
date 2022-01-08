@@ -5,7 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rx_bloc/flutter_rx_bloc.dart';
 import 'package:provider/src/provider.dart';
-import 'package:rx_bloc_library/base/models/extra_action.dart';
+import 'package:rx_bloc_library/base/models/extra_action_model.dart';
 import 'package:rx_bloc_library/feature_home/blocs/home_bloc.dart';
 import 'package:rx_bloc_library/feature_todo_list/blocs/todo_list_bloc.dart';
 
@@ -18,22 +18,22 @@ class ExtraActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PopupMenuButton<ExtraAction>(
+    return PopupMenuButton<ExtraActionModel>(
       key: RxBlocLibraryKeys.extraActionsPopupMenuButton,
       onSelected: (action) {
         switch (action) {
-          case ExtraAction.clearCompleted:
+          case ExtraActionModel.clearCompleted:
             context.read<HomeBlocType>().events.deleteTodoListCompleted();
             break;
-          case ExtraAction.toggleAllComplete:
+          case ExtraActionModel.toggleAllComplete:
             context.read<HomeBlocType>().events.toggleTodoListCompletion();
             break;
         }
       },
-      itemBuilder: (BuildContext context) => <PopupMenuItem<ExtraAction>>[
-        PopupMenuItem<ExtraAction>(
+      itemBuilder: (BuildContext context) => <PopupMenuItem<ExtraActionModel>>[
+        PopupMenuItem<ExtraActionModel>(
           key: ArchSampleKeys.toggleAll,
-          value: ExtraAction.toggleAllComplete,
+          value: ExtraActionModel.toggleAllComplete,
           child: RxBlocBuilder<HomeBlocType, bool>(
             bloc: context.read<HomeBlocType>(),
             state: (bloc) => bloc.states.allTodoListComplete,
@@ -44,9 +44,9 @@ class ExtraActions extends StatelessWidget {
             ),
           ),
         ),
-        PopupMenuItem<ExtraAction>(
+        PopupMenuItem<ExtraActionModel>(
           key: ArchSampleKeys.clearCompleted,
-          value: ExtraAction.clearCompleted,
+          value: ExtraActionModel.clearCompleted,
           child: Text(
             ArchSampleLocalizations.of(context).clearCompleted,
           ),
