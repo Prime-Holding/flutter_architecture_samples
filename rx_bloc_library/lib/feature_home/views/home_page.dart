@@ -37,7 +37,7 @@ class HomePage extends StatelessWidget {
             ],
           ),
           body: activeTab == AppTab.todos
-              ? TodoListPage.withDependencies(context)
+              ? TodoListPage()
               : StatsPage.withDependencies(context),
           floatingActionButton: FloatingActionButton(
             key: ArchSampleKeys.addTodoFab,

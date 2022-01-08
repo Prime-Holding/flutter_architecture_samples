@@ -11,6 +11,7 @@ import 'package:todos_app_core/todos_app_core.dart';
 import 'package:todos_repository_core/todos_repository_core.dart';
 import 'package:todos_repository_local_storage/todos_repository_local_storage.dart';
 
+import 'base/app_dependencies.dart';
 import 'feature_todo_manage/views/todo_manage_page.dart';
 
 void runBlocLibraryApp() {
@@ -20,20 +21,7 @@ void runBlocLibraryApp() {
 class TodosApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MultiProvider(
-        providers: [
-          Provider<ReactiveTodosRepository>(
-            create: (context) => ReactiveLocalStorageRepository(
-              seedValue: [
-                TodoEntity('test 1', '1', 'note 1', false),
-                TodoEntity('test 2', '2', 'note 2', true),
-              ],
-              repository: KeyValueStorage(
-                'rx_bloc_library',
-                SharedPreferences.getInstance(),
-              ),
-            ),
-          )
-        ],
+        providers: AppDependencies.from(context).providers,
         child: MaterialApp(
           onGenerateTitle: (context) =>
               FlutterRxBlocLocalizations.of(context).appTitle,

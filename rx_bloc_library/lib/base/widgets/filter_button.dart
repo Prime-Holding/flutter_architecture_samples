@@ -3,6 +3,9 @@
 // in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_rx_bloc/flutter_rx_bloc.dart';
+import 'package:provider/src/provider.dart';
+import 'package:rx_bloc_library/feature_todo_list/blocs/todo_list_bloc.dart';
 import 'package:todos_app_core/todos_app_core.dart';
 
 import '../models/models.dart';
@@ -16,34 +19,30 @@ class FilterButton extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => Container();
-  // Widget build(BuildContext context) {
-  //   final defaultStyle = Theme.of(context).textTheme.body1;
-  //   final activeStyle = Theme.of(context)
-  //       .textTheme
-  //       .body1
-  //       .copyWith(color: Theme.of(context).accentColor);
-  //   final filteredTodosBloc = BlocProvider.of<FilteredTodosBloc>(context);
-  //   return BlocBuilder(
-  //       bloc: filteredTodosBloc,
-  //       builder: (BuildContext context, FilteredTodosState state) {
-  //         final button = _Button(
-  //           onSelected: (filter) {
-  //             filteredTodosBloc.add(UpdateFilter(filter));
-  //           },
-  //           activeFilter: state is FilteredTodosLoaded
-  //               ? state.activeFilter
-  //               : VisibilityFilter.all,
-  //           activeStyle: activeStyle,
-  //           defaultStyle: defaultStyle,
-  //         );
-  //         return AnimatedOpacity(
-  //           opacity: visible ? 1.0 : 0.0,
-  //           duration: Duration(milliseconds: 150),
-  //           child: visible ? button : IgnorePointer(child: button),
-  //         );
-  //       });
-  // }
+  Widget build(BuildContext context) {
+    final activeStyle = Theme.of(context)
+        .textTheme
+        .bodyText1!
+        .copyWith(color: Theme.of(context).colorScheme.secondary);
+
+    final defaultStyle = Theme.of(context).textTheme.bodyText1!;
+
+    final button = RxBlocBuilder<TodoListBlocType, VisibilityFilter>(
+      state: (bloc) => bloc.states.currentFilter,
+      builder: (context, snapshot, bloc) => _Button(
+        onSelected: (filter) =>
+            context.read<TodoListBlocType>().events.filterBy(filter),
+        activeFilter: snapshot.data ?? VisibilityFilter.all,
+        activeStyle: activeStyle,
+        defaultStyle: defaultStyle,
+      ),
+    );
+    return AnimatedOpacity(
+      opacity: visible ? 1.0 : 0.0,
+      duration: Duration(milliseconds: 150),
+      child: visible ? button : IgnorePointer(child: button),
+    );
+  }
 }
 
 class _Button extends StatelessWidget {

@@ -31,6 +31,10 @@ abstract class $TodoListBloc extends RxBlocBase
   /// Тhe [Subject] where events sink to by calling [addTodo]
   final _$addTodoEvent = PublishSubject<TodoEntity>();
 
+  /// Тhe [Subject] where events sink to by calling [filterBy]
+  final _$filterByEvent =
+      BehaviorSubject<VisibilityFilter>.seeded(VisibilityFilter.all);
+
   /// The state of [todoList] implemented in [_mapToTodoListState]
   late final Stream<Result<List<TodoEntity>>> _todoListState =
       _mapToTodoListState();
@@ -59,6 +63,9 @@ abstract class $TodoListBloc extends RxBlocBase
 
   @override
   void addTodo(TodoEntity todo) => _$addTodoEvent.add(todo);
+
+  @override
+  void filterBy(VisibilityFilter filter) => _$filterByEvent.add(filter);
 
   @override
   Stream<Result<List<TodoEntity>>> get todoList => _todoListState;
@@ -92,6 +99,7 @@ abstract class $TodoListBloc extends RxBlocBase
     _$toggleTodoCompletionEvent.close();
     _$deleteTodoEvent.close();
     _$addTodoEvent.close();
+    _$filterByEvent.close();
     _compositeSubscription.dispose();
     super.dispose();
   }

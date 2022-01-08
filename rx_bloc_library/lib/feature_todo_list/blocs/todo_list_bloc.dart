@@ -1,5 +1,7 @@
 import 'package:rx_bloc/rx_bloc.dart';
 import 'package:rx_bloc_library/base/extensions/todo_entity_extensions.dart';
+import 'package:rx_bloc_library/base/models/models.dart';
+import 'package:rx_bloc_library/feature_todo_list/services/todo_list_service.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todos_repository_core/todos_repository_core.dart';
 
@@ -28,6 +30,10 @@ abstract class TodoListBlocEvents {
   /// - [TodoListBlocStates.todoAdded]
   /// - [TodoListBlocStates.todoList]
   void addTodo(TodoEntity todo);
+
+  /// Filter the [TodoListBlocStates.todoList] by the give [filter]
+  @RxBlocEvent(type: RxBlocEventType.behaviour, seed: VisibilityFilter.all)
+  void filterBy(VisibilityFilter filter);
 }
 
 /// A contract class containing all states of the TodoListBloC.
@@ -44,6 +50,7 @@ abstract class TodoListBlocStates {
   /// - [TodoListBlocEvents.toggleTodoCompletion]
   /// - [TodoListBlocEvents.deleteTodo]
   /// - [TodoListBlocEvents.addTodo]
+  /// - [TodoListBlocEvents.filterBy]
   Stream<Result<List<TodoEntity>>> get todoList;
 
   /// The state of the change of a [TodoEntity]
@@ -60,27 +67,38 @@ abstract class TodoListBlocStates {
   ///
   /// This state is controlled by [TodoListBlocEvents.addTodo]
   PublishConnectableStream<TodoEntity> get todoAdded;
+
+  /// The current [TodoEntity] list filter.
+  ///
+  /// This state is controlled by [TodoListBlocEvents.filterBy]
+  @RxBlocIgnoreState()
+  Stream<VisibilityFilter> get currentFilter;
 }
 
 @RxBloc()
 class TodoListBloc extends $TodoListBloc {
   TodoListBloc(
     ReactiveTodosRepository repository,
-  ) : _repository = repository {
+    TodoListService service,
+  )   : _repository = repository,
+        _service = service {
     todoCompleted.connect().addTo(_compositeSubscription);
     todoDeleted.connect().addTo(_compositeSubscription);
     todoAdded.connect().addTo(_compositeSubscription);
   }
 
   final ReactiveTodosRepository _repository;
+  final TodoListService _service;
 
   @override
-  Stream<Result<List<TodoEntity>>> _mapToTodoListState() => _$fetchTodosEvent
-      .startWith(null)
-      .switchMap(
-        (_) => _repository.todos().asResultStream(),
-      )
-      .setResultStateHandler(this);
+  Stream<Result<List<TodoEntity>>> _mapToTodoListState() => Rx.combineLatest2<
+          Result<List<TodoEntity>>, VisibilityFilter, Result<List<TodoEntity>>>(
+        _$fetchTodosEvent
+            .startWith(null)
+            .switchMap((_) => _repository.todos().asResultStream()),
+        _$filterByEvent,
+        (todos, filter) => _service.filterResultTodoListBy(todos, filter),
+      ).setResultStateHandler(this);
 
   @override
   PublishConnectableStream<void> _mapToTodoCompletedState() =>
@@ -119,4 +137,7 @@ class TodoListBloc extends $TodoListBloc {
 
   @override
   Stream<Exception> get errors => errorState;
+
+  @override
+  Stream<VisibilityFilter> get currentFilter => _$filterByEvent;
 }

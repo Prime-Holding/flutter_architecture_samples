@@ -16,11 +16,6 @@ class TodoListPage extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
-  static Widget withDependencies(BuildContext context) => MultiProvider(
-        providers: TodoListDependencies.from(context).providers,
-        child: TodoListPage(),
-      );
-
   @override
   Widget build(BuildContext context) => Row(
         mainAxisAlignment: MainAxisAlignment.center,
