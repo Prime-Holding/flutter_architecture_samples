@@ -26,7 +26,10 @@ class HomeDependencies {
 
   late final List<RxBlocProvider> _blocs = [
     RxBlocProvider<HomeBlocType>(
-      create: (context) => HomeBloc(),
+      create: (context) => HomeBloc(
+        context.read(),
+        context.read(),
+      ),
     ),
   ];
 }

@@ -2,12 +2,12 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_rx_bloc/flutter_rx_bloc.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:rx_bloc_library/base/services/todo_list_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todos_repository_core/todos_repository_core.dart';
 import 'package:todos_repository_local_storage/todos_repository_local_storage.dart';
 
 import '../feature_todo_list/blocs/todo_list_bloc.dart';
-import '../feature_todo_list/services/todo_list_service.dart';
 
 class AppDependencies {
   AppDependencies._(this.context);
@@ -49,7 +49,7 @@ class AppDependencies {
 
   late final List<SingleChildWidget> _services = [
     Provider<TodoListService>(
-      create: (context) => TodoListService(),
+      create: (context) => TodoListService(context.read()),
     ),
   ];
 }

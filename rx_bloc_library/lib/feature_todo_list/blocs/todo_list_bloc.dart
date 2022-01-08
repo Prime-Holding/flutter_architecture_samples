@@ -1,7 +1,7 @@
 import 'package:rx_bloc/rx_bloc.dart';
 import 'package:rx_bloc_library/base/extensions/todo_entity_extensions.dart';
 import 'package:rx_bloc_library/base/models/models.dart';
-import 'package:rx_bloc_library/feature_todo_list/services/todo_list_service.dart';
+import 'package:rx_bloc_library/base/services/todo_list_service.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todos_repository_core/todos_repository_core.dart';
 
@@ -24,7 +24,7 @@ abstract class TodoListBlocEvents {
   /// Subscribe for state changes in [TodoListBlocStates.todoDeleted]
   void deleteTodo(TodoEntity todo);
 
-  /// Persist the give [todo].
+  /// Persist the given [todo].
   ///
   /// Subscribe for state changes in
   /// - [TodoListBlocStates.todoAdded]
@@ -83,6 +83,7 @@ class TodoListBloc extends $TodoListBloc {
   )   : _repository = repository,
         _service = service {
     todoCompleted.connect().addTo(_compositeSubscription);
+
     todoDeleted.connect().addTo(_compositeSubscription);
     todoAdded.connect().addTo(_compositeSubscription);
   }
@@ -136,8 +137,8 @@ class TodoListBloc extends $TodoListBloc {
       .publish();
 
   @override
-  Stream<Exception> get errors => errorState;
+  Stream<VisibilityFilter> get currentFilter => _$filterByEvent;
 
   @override
-  Stream<VisibilityFilter> get currentFilter => _$filterByEvent;
+  Stream<Exception> get errors => errorState;
 }
