@@ -9,18 +9,38 @@ class TodoListService {
 
   final ReactiveTodosRepository _repository;
 
+  /// Persist the given [todo].
+  ///
+  /// All subscribers of [TodoListService.todos] will receive the created entity.
   Future<void> addNewTodo(TodoEntity todo) => _repository.addNewTodo(todo);
 
+  /// Delete todos of the given [idList]
+  ///
+  /// All subscribers of [TodoListService.todos] will receive
+  /// a new list without the deleted todos
   Future<void> deleteTodo(List<String> idList) =>
       _repository.deleteTodo(idList);
 
-  Stream<List<TodoEntity>> todos() => _repository.todos();
-
+  /// Update the given [todo].
+  ///
+  /// All subscribers of [TodoListService.todos] will receive the updated entity.
   Future<void> updateTodo(TodoEntity todo) => _repository.updateTodo(todo);
 
+  /// Get [TodoEntity] list.
+  ///
+  /// This stream is controlled by
+  /// - [TodoListService.addNewTodo]
+  /// - [TodoListService.deleteTodo]
+  /// - [TodoListService.updateTodo]
+  Stream<List<TodoEntity>> todos() => _repository.todos();
+
+  /// Check whether each [TodoEntity] of the given [todoList] are complete.
   bool allTodoListComplete(List<TodoEntity> todoList) =>
       todoList.every((todo) => todo.complete);
 
+  /// Update all the complete field of each [TodoEntity].
+  ///
+  /// If each [TodoEntity] is complete, they will be updated as uncompleted.
   Future<void> toggleTodoListCompletion() async {
     final todos = await _repository.todos().first;
 
@@ -33,6 +53,7 @@ class TodoListService {
     )).then((value) => null);
   }
 
+  /// Delete each completed of [TodoEntity]
   Future<void> deleteTodoListCompleted() async {
     final todos = await _repository.todos().first;
 
@@ -46,6 +67,7 @@ class TodoListService {
     return _repository.deleteTodo(completeTodoIds);
   }
 
+  /// Filter the [todoList] by the given [filter]
   Result<List<TodoEntity>> filterResultTodoListBy(
     Result<List<TodoEntity>> todoList,
     VisibilityFilter filter,
@@ -57,6 +79,7 @@ class TodoListService {
     return todoList;
   }
 
+  /// Filter the [todoList] by the given [filter]
   List<TodoEntity> filterTodoListBy(
     List<TodoEntity> todoList,
     VisibilityFilter filter,
