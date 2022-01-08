@@ -51,7 +51,7 @@ abstract class TodoListBlocStates {
   /// - [TodoListBlocEvents.deleteTodo]
   /// - [TodoListBlocEvents.addTodo]
   /// - [TodoListBlocEvents.filterBy]
-  Stream<Result<List<TodoEntity>>> get todoList;
+  ReplayConnectableStream<Result<List<TodoEntity>>> get todoList;
 
   /// The state of the change of a [TodoEntity]
   ///
@@ -81,22 +81,23 @@ class TodoListBloc extends $TodoListBloc {
     TodoListService service,
   ) : _service = service {
     todoCompleted.connect().addTo(_compositeSubscription);
-
     todoDeleted.connect().addTo(_compositeSubscription);
     todoAdded.connect().addTo(_compositeSubscription);
+    todoList.connect().addTo(_compositeSubscription);
   }
 
   final TodoListService _service;
 
   @override
-  Stream<Result<List<TodoEntity>>> _mapToTodoListState() => Rx.combineLatest2<
-          Result<List<TodoEntity>>, VisibilityFilter, Result<List<TodoEntity>>>(
+  ReplayConnectableStream<Result<List<TodoEntity>>> _mapToTodoListState() =>
+      Rx.combineLatest2<Result<List<TodoEntity>>, VisibilityFilter,
+          Result<List<TodoEntity>>>(
         _$fetchTodosEvent
             .startWith(null)
             .switchMap((_) => _service.todos().asResultStream()),
         _$filterByEvent,
         (todos, filter) => _service.filterResultTodoListBy(todos, filter),
-      ).setResultStateHandler(this);
+      ).setResultStateHandler(this).publishReplay(maxSize: 1);
 
   @override
   PublishConnectableStream<void> _mapToTodoCompletedState() =>

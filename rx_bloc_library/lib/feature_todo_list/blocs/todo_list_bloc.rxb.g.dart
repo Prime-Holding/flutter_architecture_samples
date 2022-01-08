@@ -36,7 +36,7 @@ abstract class $TodoListBloc extends RxBlocBase
       BehaviorSubject<VisibilityFilter>.seeded(VisibilityFilter.all);
 
   /// The state of [todoList] implemented in [_mapToTodoListState]
-  late final Stream<Result<List<TodoEntity>>> _todoListState =
+  late final ReplayConnectableStream<Result<List<TodoEntity>>> _todoListState =
       _mapToTodoListState();
 
   /// The state of [todoCompleted] implemented in [_mapToTodoCompletedState]
@@ -68,7 +68,8 @@ abstract class $TodoListBloc extends RxBlocBase
   void filterBy(VisibilityFilter filter) => _$filterByEvent.add(filter);
 
   @override
-  Stream<Result<List<TodoEntity>>> get todoList => _todoListState;
+  ReplayConnectableStream<Result<List<TodoEntity>>> get todoList =>
+      _todoListState;
 
   @override
   PublishConnectableStream<void> get todoCompleted => _todoCompletedState;
@@ -79,7 +80,7 @@ abstract class $TodoListBloc extends RxBlocBase
   @override
   PublishConnectableStream<TodoEntity> get todoAdded => _todoAddedState;
 
-  Stream<Result<List<TodoEntity>>> _mapToTodoListState();
+  ReplayConnectableStream<Result<List<TodoEntity>>> _mapToTodoListState();
 
   PublishConnectableStream<void> _mapToTodoCompletedState();
 
