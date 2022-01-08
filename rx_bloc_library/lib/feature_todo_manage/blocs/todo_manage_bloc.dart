@@ -1,5 +1,6 @@
 import 'package:rx_bloc/rx_bloc.dart';
 import 'package:rx_bloc_library/base/extensions/todo_entity_extensions.dart';
+import 'package:rx_bloc_library/base/services/todo_list_service.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todos_repository_core/todos_repository_core.dart';
 
@@ -49,14 +50,14 @@ abstract class TodoManageBlocStates {
 @RxBloc()
 class TodoManageBloc extends $TodoManageBloc {
   TodoManageBloc(
-    ReactiveTodosRepository repository, {
+    TodoListService service, {
     required TodoEntity? todoEntity,
   })  : _todoEntity = todoEntity ?? TodoEntityX.empty(),
-        _repository = repository,
+        _service = service,
         _isEditing = todoEntity != null;
 
   final TodoEntity _todoEntity;
-  final ReactiveTodosRepository _repository;
+  final TodoListService _service;
   final bool _isEditing;
 
   @override
@@ -79,12 +80,12 @@ class TodoManageBloc extends $TodoManageBloc {
           final updatedEntity = _copyTodoWithEventsData();
 
           if (_isEditing) {
-            return _repository
+            return _service
                 .updateTodo(updatedEntity)
                 .then((value) => updatedEntity)
                 .asResultStream();
           }
-          return _repository
+          return _service
               .addNewTodo(updatedEntity)
               .then((value) => updatedEntity)
               .asResultStream();

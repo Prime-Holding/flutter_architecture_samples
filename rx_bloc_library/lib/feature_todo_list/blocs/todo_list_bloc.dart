@@ -78,17 +78,14 @@ abstract class TodoListBlocStates {
 @RxBloc()
 class TodoListBloc extends $TodoListBloc {
   TodoListBloc(
-    ReactiveTodosRepository repository,
     TodoListService service,
-  )   : _repository = repository,
-        _service = service {
+  ) : _service = service {
     todoCompleted.connect().addTo(_compositeSubscription);
 
     todoDeleted.connect().addTo(_compositeSubscription);
     todoAdded.connect().addTo(_compositeSubscription);
   }
 
-  final ReactiveTodosRepository _repository;
   final TodoListService _service;
 
   @override
@@ -96,7 +93,7 @@ class TodoListBloc extends $TodoListBloc {
           Result<List<TodoEntity>>, VisibilityFilter, Result<List<TodoEntity>>>(
         _$fetchTodosEvent
             .startWith(null)
-            .switchMap((_) => _repository.todos().asResultStream()),
+            .switchMap((_) => _service.todos().asResultStream()),
         _$filterByEvent,
         (todos, filter) => _service.filterResultTodoListBy(todos, filter),
       ).setResultStateHandler(this);
@@ -104,7 +101,7 @@ class TodoListBloc extends $TodoListBloc {
   @override
   PublishConnectableStream<void> _mapToTodoCompletedState() =>
       _$toggleTodoCompletionEvent
-          .switchMap((todo) => _repository
+          .switchMap((todo) => _service
               .updateTodo(
                 todo.copyWith(complete: !todo.complete),
               )
@@ -116,7 +113,7 @@ class TodoListBloc extends $TodoListBloc {
   @override
   PublishConnectableStream<TodoEntity> _mapToTodoDeletedState() =>
       _$deleteTodoEvent
-          .switchMap((todo) => _repository
+          .switchMap((todo) => _service
               .deleteTodo(
                 [todo.id],
               )
@@ -129,8 +126,7 @@ class TodoListBloc extends $TodoListBloc {
   @override
   PublishConnectableStream<TodoEntity> _mapToTodoAddedState() => _$addTodoEvent
       .switchMap(
-        (todo) =>
-            _repository.addNewTodo(todo).then((_) => todo).asResultStream(),
+        (todo) => _service.addNewTodo(todo).then((_) => todo).asResultStream(),
       )
       .setResultStateHandler(this)
       .whereSuccess()

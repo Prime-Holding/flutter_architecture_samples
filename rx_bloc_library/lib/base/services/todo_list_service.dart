@@ -9,6 +9,15 @@ class TodoListService {
 
   final ReactiveTodosRepository _repository;
 
+  Future<void> addNewTodo(TodoEntity todo) => _repository.addNewTodo(todo);
+
+  Future<void> deleteTodo(List<String> idList) =>
+      _repository.deleteTodo(idList);
+
+  Stream<List<TodoEntity>> todos() => _repository.todos();
+
+  Future<void> updateTodo(TodoEntity todo) => _repository.updateTodo(todo);
+
   bool allTodoListComplete(List<TodoEntity> todoList) =>
       todoList.every((todo) => todo.complete);
 

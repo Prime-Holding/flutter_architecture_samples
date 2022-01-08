@@ -50,15 +50,12 @@ abstract class HomeBlocStates {
 
 @RxBloc()
 class HomeBloc extends $HomeBloc {
-  HomeBloc(TodoListService service, ReactiveTodosRepository repository)
-      : _service = service,
-        _repository = repository {
+  HomeBloc(TodoListService service) : _service = service {
     todoListCompleted.connect().addTo(_compositeSubscription);
     completeTodoListDeleted.connect().addTo(_compositeSubscription);
   }
 
   final TodoListService _service;
-  final ReactiveTodosRepository _repository;
 
   @override
   Stream<AppTab> _mapToSelectedTabState() =>
@@ -87,7 +84,7 @@ class HomeBloc extends $HomeBloc {
           .publish();
 
   @override
-  Stream<bool> _mapToAllTodoListCompleteState() => _repository.todos().map(
+  Stream<bool> _mapToAllTodoListCompleteState() => _service.todos().map(
         (todos) => _service.allTodoListComplete(todos),
       );
 }

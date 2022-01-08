@@ -1,5 +1,6 @@
 import 'package:rx_bloc/rx_bloc.dart';
 import 'package:rx_bloc_library/base/extensions/todo_entity_extensions.dart';
+import 'package:rx_bloc_library/base/services/todo_list_service.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todos_repository_core/todos_repository_core.dart';
 
@@ -52,21 +53,21 @@ abstract class TodoDetailsBlocStates {
 @RxBloc()
 class TodoDetailsBloc extends $TodoDetailsBloc {
   TodoDetailsBloc(
-    ReactiveTodosRepository repository, {
+    TodoListService service, {
     required String id,
-  })  : _repository = repository,
+  })  : _service = service,
         _id = id {
     completed.connect().addTo(_compositeSubscription);
   }
 
-  final ReactiveTodosRepository _repository;
+  final TodoListService _service;
   final String _id;
 
   @override
   Stream<TodoEntity> _mapToTodoState() => _$fetchTodoEvent
       .startWith(null)
       .switchMap(
-        (value) => _repository
+        (value) => _service
             .todos()
             .map((todos) => todos.firstWhereOrNull((todo) => todo.id == _id))
             .whereType<TodoEntity>()
@@ -83,7 +84,7 @@ class TodoDetailsBloc extends $TodoDetailsBloc {
             (complete, todo) => todo.copyWith(complete: !todo.complete),
           )
           .switchMap(
-            (todo) => _repository
+            (todo) => _service
                 .updateTodo(todo)
                 .asStream()
                 .mapTo(todo)
@@ -101,7 +102,7 @@ class TodoDetailsBloc extends $TodoDetailsBloc {
         (complete, todo) => todo,
       )
       .switchMap(
-        (todo) => _repository
+        (todo) => _service
             .deleteTodo([todo.id])
             .asStream()
             .mapTo(todo)

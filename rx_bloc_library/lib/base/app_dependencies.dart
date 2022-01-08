@@ -18,30 +18,13 @@ class AppDependencies {
   final BuildContext context;
 
   late List<SingleChildWidget> providers = [
-    ..._repositories,
     ..._services,
     ..._blocs,
-  ];
-
-  late final List<SingleChildWidget> _repositories = [
-    Provider<ReactiveTodosRepository>(
-      create: (context) => ReactiveLocalStorageRepository(
-        seedValue: [
-          TodoEntity('test 1', '1', 'note 1', false),
-          TodoEntity('test 2', '2', 'note 2', true),
-        ],
-        repository: KeyValueStorage(
-          'rx_bloc_library',
-          SharedPreferences.getInstance(),
-        ),
-      ),
-    )
   ];
 
   late final List<RxBlocProvider> _blocs = [
     RxBlocProvider<TodoListBlocType>(
       create: (context) => TodoListBloc(
-        context.read(),
         context.read(),
       ),
     ),
@@ -49,7 +32,18 @@ class AppDependencies {
 
   late final List<SingleChildWidget> _services = [
     Provider<TodoListService>(
-      create: (context) => TodoListService(context.read()),
+      create: (context) => TodoListService(
+        ReactiveLocalStorageRepository(
+          seedValue: [
+            TodoEntity('test 1', '1', 'note 1', false),
+            TodoEntity('test 2', '2', 'note 2', true),
+          ],
+          repository: KeyValueStorage(
+            'rx_bloc_library',
+            SharedPreferences.getInstance(),
+          ),
+        ),
+      ),
     ),
   ];
 }

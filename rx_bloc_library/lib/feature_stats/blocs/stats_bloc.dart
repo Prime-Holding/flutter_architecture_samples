@@ -1,7 +1,7 @@
 import 'package:rx_bloc/rx_bloc.dart';
 import 'package:rx_bloc_library/base/models/models.dart';
+import 'package:rx_bloc_library/base/services/todo_list_service.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:todos_repository_core/todos_repository_core.dart';
 
 part 'stats_bloc.rxb.g.dart';
 
@@ -28,15 +28,15 @@ abstract class StatsBlocStates {
 
 @RxBloc()
 class StatsBloc extends $StatsBloc {
-  StatsBloc(ReactiveTodosRepository repository) : _repository = repository;
+  StatsBloc(TodoListService service) : _service = service;
 
-  final ReactiveTodosRepository _repository;
+  final TodoListService _service;
 
   @override
   Stream<Result<Stats>> _mapToStatsState() => _$fetchStatsEvent
       .startWith(null)
       .switchMap(
-        (value) => _repository
+        (value) => _service
             .todos()
             .map(
               (list) => Stats(
