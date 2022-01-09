@@ -44,6 +44,7 @@ dev_dependencies:
   mockito:
   build_runner: ^2.1.7
   rx_bloc_generator:
+  rx_bloc_test: ^3.2.0
   integration_tests:
     path: ../integration_tests
 

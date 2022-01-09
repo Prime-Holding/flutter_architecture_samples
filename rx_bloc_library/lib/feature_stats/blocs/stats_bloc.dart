@@ -35,6 +35,7 @@ class StatsBloc extends $StatsBloc {
   @override
   Stream<Result<StatsModel>> _mapToStatsState() => _$fetchStatsEvent
       .startWith(null)
+      .throttleTime(Duration(seconds: 1))
       .switchMap(
         (value) => _service.getStats().asResultStream(),
       )
