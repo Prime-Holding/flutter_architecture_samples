@@ -13,18 +13,26 @@ void main() {
     () => runGoldenTests(
       [
         generateDeviceBuilder(
-          scenario: Scenario(name: 'counter'),
-          widget: statsPageFactory(stats: Result.success(Stubs.stats12)),
+          scenario: Scenario(name: 'success'),
+          widget: statsPageFactory(
+            stats: Result.success(
+              Stubs.stats12,
+            ),
+          ),
         ),
         generateDeviceBuilder(
           scenario: Scenario(name: 'error'),
           widget: statsPageFactory(
-            stats: Result.error(ErrorGenericModel('test')),
+            stats: Result.error(
+              ErrorGenericModel('test'),
+            ),
           ),
         ),
         generateDeviceBuilder(
           scenario: Scenario(name: 'loading'),
-          widget: statsPageFactory(stats: Result.loading()),
+          widget: statsPageFactory(
+            stats: Result.loading(),
+          ),
         ),
       ],
     ),

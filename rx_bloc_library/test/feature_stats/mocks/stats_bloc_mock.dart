@@ -14,12 +14,12 @@ import 'stats_bloc_mock.mocks.dart';
 StatsBlocType statsBlocMockFactory({
   required Result<StatsModel> stats,
 }) {
-  final statsBloc = MockStatsBlocType();
+  final statsBlocMock = MockStatsBlocType();
   final eventsMock = MockStatsBlocEvents();
   final statesMock = MockStatsBlocStates();
 
-  when(statsBloc.events).thenReturn(eventsMock);
-  when(statsBloc.states).thenReturn(statesMock);
+  when(statsBlocMock.events).thenReturn(eventsMock);
+  when(statsBlocMock.states).thenReturn(statesMock);
 
   when(statesMock.stats).thenAnswer(
     (_) => Stream.value(stats),
@@ -29,5 +29,5 @@ StatsBlocType statsBlocMockFactory({
     (_) => Stream.empty(),
   );
 
-  return statsBloc;
+  return statsBlocMock;
 }

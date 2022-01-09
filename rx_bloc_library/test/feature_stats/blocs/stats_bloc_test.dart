@@ -61,7 +61,7 @@ void main() {
       'stats error',
       build: () async {
         when(serviceMock.getStats()).thenAnswer((_) async* {
-          throw 'test';
+          throw Stubs.genericModel;
         });
 
         return StatsBloc(serviceMock);
@@ -69,7 +69,7 @@ void main() {
       state: (bloc) => bloc.states.stats,
       expect: <Result<StatsModel>>[
         Result.loading(),
-        Result.error(Exception('test')),
+        Result.error(Stubs.genericModel),
       ],
     );
   });
