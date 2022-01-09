@@ -35,8 +35,8 @@ class TodoListService {
   Stream<List<TodoEntity>> todos() => _repository.todos();
 
   /// Check whether each [TodoEntity] of the given [todoList] are complete.
-  bool allTodoListComplete(List<TodoEntity> todoList) =>
-      todoList.every((todo) => todo.complete);
+  Stream<bool> allTodoListComplete() =>
+      todos().map((todos) => _allTodoListComplete(todos));
 
   /// Update all the complete field of each [TodoEntity].
   ///
@@ -44,7 +44,7 @@ class TodoListService {
   Future<void> toggleTodoListCompletion() async {
     final todos = await _repository.todos().first;
 
-    final allComplete = allTodoListComplete(todos);
+    final allComplete = _allTodoListComplete(todos);
 
     return Future.wait(todos.map(
       (todo) => _repository.updateTodo(
@@ -79,6 +79,14 @@ class TodoListService {
     return todoList;
   }
 
+  /// Get stats of all [TodoEntity]s
+  Stream<StatsModel> getStats() => todos().map(
+        (list) => StatsModel(
+          numActive: list.where((element) => !element.complete).length,
+          numCompleted: list.where((element) => element.complete).length,
+        ),
+      );
+
   /// Filter the [todoList] by the given [filter]
   List<TodoEntity> filterTodoListBy(
     List<TodoEntity> todoList,
@@ -99,4 +107,7 @@ class TodoListService {
 
         return false;
       }).toList();
+
+  bool _allTodoListComplete(List<TodoEntity> todoList) =>
+      todoList.every((todo) => todo.complete);
 }

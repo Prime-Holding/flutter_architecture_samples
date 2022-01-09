@@ -154,7 +154,7 @@ class TodoDeletedListener extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       RxBlocListener<TodoDetailsBlocType, TodoEntity>(
-        state: (bloc) => bloc.states.deleted,
+        state: (bloc) => bloc.states.onDeleted,
         listener: (context, todo) {
           Navigator.pop(context, todo);
         },

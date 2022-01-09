@@ -34,11 +34,11 @@ abstract class $TodoManageBloc extends RxBlocBase
   /// The state of [note] implemented in [_mapToNoteState]
   late final Stream<String> _noteState = _mapToNoteState();
 
-  /// The state of [saved] implemented in [_mapToSavedState]
-  late final Stream<TodoEntity> _savedState = _mapToSavedState();
+  /// The state of [errorVisible] implemented in [_mapToErrorVisibleState]
+  late final Stream<bool> _errorVisibleState = _mapToErrorVisibleState();
 
-  /// The state of [showError] implemented in [_mapToShowErrorState]
-  late final Stream<bool> _showErrorState = _mapToShowErrorState();
+  /// The state of [onSaved] implemented in [_mapToOnSavedState]
+  late final Stream<TodoEntity> _onSavedState = _mapToOnSavedState();
 
   @override
   void save() => _$saveEvent.add(null);
@@ -56,18 +56,18 @@ abstract class $TodoManageBloc extends RxBlocBase
   Stream<String> get note => _noteState;
 
   @override
-  Stream<TodoEntity> get saved => _savedState;
+  Stream<bool> get errorVisible => _errorVisibleState;
 
   @override
-  Stream<bool> get showError => _showErrorState;
+  Stream<TodoEntity> get onSaved => _onSavedState;
 
   Stream<String> _mapToTaskState();
 
   Stream<String> _mapToNoteState();
 
-  Stream<TodoEntity> _mapToSavedState();
+  Stream<bool> _mapToErrorVisibleState();
 
-  Stream<bool> _mapToShowErrorState();
+  Stream<TodoEntity> _mapToOnSavedState();
 
   @override
   TodoManageBlocEvents get events => this;

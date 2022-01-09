@@ -22,8 +22,8 @@ abstract class $TodoDetailsBloc extends RxBlocBase
         TodoDetailsBlocType {
   final _compositeSubscription = CompositeSubscription();
 
-  /// Тhe [Subject] where events sink to by calling [fetchTodo]
-  final _$fetchTodoEvent = PublishSubject<void>();
+  /// Тhe [Subject] where events sink to by calling [fetch]
+  final _$fetchEvent = PublishSubject<void>();
 
   /// Тhe [Subject] where events sink to by calling [toggleCompletion]
   final _$toggleCompletionEvent = PublishSubject<void>();
@@ -34,15 +34,15 @@ abstract class $TodoDetailsBloc extends RxBlocBase
   /// The state of [todo] implemented in [_mapToTodoState]
   late final Stream<TodoEntity> _todoState = _mapToTodoState();
 
-  /// The state of [completed] implemented in [_mapToCompletedState]
-  late final PublishConnectableStream<bool> _completedState =
-      _mapToCompletedState();
+  /// The state of [onCompleted] implemented in [_mapToOnCompletedState]
+  late final PublishConnectableStream<bool> _onCompletedState =
+      _mapToOnCompletedState();
 
-  /// The state of [deleted] implemented in [_mapToDeletedState]
-  late final Stream<TodoEntity> _deletedState = _mapToDeletedState();
+  /// The state of [onDeleted] implemented in [_mapToOnDeletedState]
+  late final Stream<TodoEntity> _onDeletedState = _mapToOnDeletedState();
 
   @override
-  void fetchTodo() => _$fetchTodoEvent.add(null);
+  void fetch() => _$fetchEvent.add(null);
 
   @override
   void toggleCompletion() => _$toggleCompletionEvent.add(null);
@@ -54,16 +54,16 @@ abstract class $TodoDetailsBloc extends RxBlocBase
   Stream<TodoEntity> get todo => _todoState;
 
   @override
-  PublishConnectableStream<bool> get completed => _completedState;
+  PublishConnectableStream<bool> get onCompleted => _onCompletedState;
 
   @override
-  Stream<TodoEntity> get deleted => _deletedState;
+  Stream<TodoEntity> get onDeleted => _onDeletedState;
 
   Stream<TodoEntity> _mapToTodoState();
 
-  PublishConnectableStream<bool> _mapToCompletedState();
+  PublishConnectableStream<bool> _mapToOnCompletedState();
 
-  Stream<TodoEntity> _mapToDeletedState();
+  Stream<TodoEntity> _mapToOnDeletedState();
 
   @override
   TodoDetailsBlocEvents get events => this;
@@ -73,7 +73,7 @@ abstract class $TodoDetailsBloc extends RxBlocBase
 
   @override
   void dispose() {
-    _$fetchTodoEvent.close();
+    _$fetchEvent.close();
     _$toggleCompletionEvent.close();
     _$deleteEvent.close();
     _compositeSubscription.dispose();

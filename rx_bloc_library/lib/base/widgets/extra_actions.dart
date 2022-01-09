@@ -23,10 +23,10 @@ class ExtraActions extends StatelessWidget {
       onSelected: (action) {
         switch (action) {
           case ExtraActionModel.clearCompleted:
-            context.read<HomeBlocType>().events.deleteTodoListCompleted();
+            context.read<TodoListBlocType>().events.deleteAllCompleted();
             break;
           case ExtraActionModel.toggleAllComplete:
-            context.read<HomeBlocType>().events.toggleTodoListCompletion();
+            context.read<TodoListBlocType>().events.toggleCompletionAll();
             break;
         }
       },
@@ -34,9 +34,8 @@ class ExtraActions extends StatelessWidget {
         PopupMenuItem<ExtraActionModel>(
           key: ArchSampleKeys.toggleAll,
           value: ExtraActionModel.toggleAllComplete,
-          child: RxBlocBuilder<HomeBlocType, bool>(
-            bloc: context.read<HomeBlocType>(),
-            state: (bloc) => bloc.states.allTodoListComplete,
+          child: RxBlocBuilder<TodoListBlocType, bool>(
+            state: (bloc) => bloc.states.allComplete,
             builder: (context, snapshot, bloc) => Text(
               snapshot.data ?? true
                   ? ArchSampleLocalizations.of(context).markAllIncomplete

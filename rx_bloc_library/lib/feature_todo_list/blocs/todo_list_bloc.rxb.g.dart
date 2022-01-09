@@ -19,74 +19,113 @@ abstract class $TodoListBloc extends RxBlocBase
     implements TodoListBlocEvents, TodoListBlocStates, TodoListBlocType {
   final _compositeSubscription = CompositeSubscription();
 
-  /// Тhe [Subject] where events sink to by calling [fetchTodos]
-  final _$fetchTodosEvent = PublishSubject<void>();
+  /// Тhe [Subject] where events sink to by calling [fetch]
+  final _$fetchEvent = PublishSubject<void>();
 
-  /// Тhe [Subject] where events sink to by calling [toggleTodoCompletion]
-  final _$toggleTodoCompletionEvent = PublishSubject<TodoEntity>();
+  /// Тhe [Subject] where events sink to by calling [toggleCompletion]
+  final _$toggleCompletionEvent = PublishSubject<TodoEntity>();
 
-  /// Тhe [Subject] where events sink to by calling [deleteTodo]
-  final _$deleteTodoEvent = PublishSubject<TodoEntity>();
+  /// Тhe [Subject] where events sink to by calling [toggleCompletionAll]
+  final _$toggleCompletionAllEvent = PublishSubject<void>();
 
-  /// Тhe [Subject] where events sink to by calling [addTodo]
-  final _$addTodoEvent = PublishSubject<TodoEntity>();
+  /// Тhe [Subject] where events sink to by calling [delete]
+  final _$deleteEvent = PublishSubject<TodoEntity>();
+
+  /// Тhe [Subject] where events sink to by calling [deleteAllCompleted]
+  final _$deleteAllCompletedEvent = PublishSubject<void>();
+
+  /// Тhe [Subject] where events sink to by calling [create]
+  final _$createEvent = PublishSubject<TodoEntity>();
 
   /// Тhe [Subject] where events sink to by calling [filterBy]
   final _$filterByEvent =
       BehaviorSubject<VisibilityFilterModel>.seeded(VisibilityFilterModel.all);
 
-  /// The state of [todoList] implemented in [_mapToTodoListState]
-  late final ReplayConnectableStream<Result<List<TodoEntity>>> _todoListState =
-      _mapToTodoListState();
+  /// The state of [list] implemented in [_mapToListState]
+  late final ReplayConnectableStream<Result<List<TodoEntity>>> _listState =
+      _mapToListState();
 
-  /// The state of [todoCompleted] implemented in [_mapToTodoCompletedState]
-  late final PublishConnectableStream<void> _todoCompletedState =
-      _mapToTodoCompletedState();
+  /// The state of [allComplete] implemented in [_mapToAllCompleteState]
+  late final Stream<bool> _allCompleteState = _mapToAllCompleteState();
 
-  /// The state of [todoDeleted] implemented in [_mapToTodoDeletedState]
-  late final PublishConnectableStream<TodoEntity> _todoDeletedState =
-      _mapToTodoDeletedState();
+  /// The state of [onCompleted] implemented in [_mapToOnCompletedState]
+  late final PublishConnectableStream<void> _onCompletedState =
+      _mapToOnCompletedState();
 
-  /// The state of [todoAdded] implemented in [_mapToTodoAddedState]
-  late final PublishConnectableStream<TodoEntity> _todoAddedState =
-      _mapToTodoAddedState();
+  /// The state of [onAllCompletion] implemented in [_mapToOnAllCompletionState]
+  late final PublishConnectableStream<void> _onAllCompletionState =
+      _mapToOnAllCompletionState();
+
+  /// The state of [onDeleted] implemented in [_mapToOnDeletedState]
+  late final PublishConnectableStream<TodoEntity> _onDeletedState =
+      _mapToOnDeletedState();
+
+  /// The state of [onCompleteDeleted] implemented in
+  /// [_mapToOnCompleteDeletedState]
+  late final PublishConnectableStream<void> _onCompleteDeletedState =
+      _mapToOnCompleteDeletedState();
+
+  /// The state of [onAdded] implemented in [_mapToOnAddedState]
+  late final PublishConnectableStream<TodoEntity> _onAddedState =
+      _mapToOnAddedState();
 
   @override
-  void fetchTodos() => _$fetchTodosEvent.add(null);
+  void fetch() => _$fetchEvent.add(null);
 
   @override
-  void toggleTodoCompletion(TodoEntity todoEntity) =>
-      _$toggleTodoCompletionEvent.add(todoEntity);
+  void toggleCompletion(TodoEntity todoEntity) =>
+      _$toggleCompletionEvent.add(todoEntity);
 
   @override
-  void deleteTodo(TodoEntity todo) => _$deleteTodoEvent.add(todo);
+  void toggleCompletionAll() => _$toggleCompletionAllEvent.add(null);
 
   @override
-  void addTodo(TodoEntity todo) => _$addTodoEvent.add(todo);
+  void delete(TodoEntity todo) => _$deleteEvent.add(todo);
+
+  @override
+  void deleteAllCompleted() => _$deleteAllCompletedEvent.add(null);
+
+  @override
+  void create(TodoEntity todo) => _$createEvent.add(todo);
 
   @override
   void filterBy(VisibilityFilterModel filter) => _$filterByEvent.add(filter);
 
   @override
-  ReplayConnectableStream<Result<List<TodoEntity>>> get todoList =>
-      _todoListState;
+  ReplayConnectableStream<Result<List<TodoEntity>>> get list => _listState;
 
   @override
-  PublishConnectableStream<void> get todoCompleted => _todoCompletedState;
+  Stream<bool> get allComplete => _allCompleteState;
 
   @override
-  PublishConnectableStream<TodoEntity> get todoDeleted => _todoDeletedState;
+  PublishConnectableStream<void> get onCompleted => _onCompletedState;
 
   @override
-  PublishConnectableStream<TodoEntity> get todoAdded => _todoAddedState;
+  PublishConnectableStream<void> get onAllCompletion => _onAllCompletionState;
 
-  ReplayConnectableStream<Result<List<TodoEntity>>> _mapToTodoListState();
+  @override
+  PublishConnectableStream<TodoEntity> get onDeleted => _onDeletedState;
 
-  PublishConnectableStream<void> _mapToTodoCompletedState();
+  @override
+  PublishConnectableStream<void> get onCompleteDeleted =>
+      _onCompleteDeletedState;
 
-  PublishConnectableStream<TodoEntity> _mapToTodoDeletedState();
+  @override
+  PublishConnectableStream<TodoEntity> get onAdded => _onAddedState;
 
-  PublishConnectableStream<TodoEntity> _mapToTodoAddedState();
+  ReplayConnectableStream<Result<List<TodoEntity>>> _mapToListState();
+
+  Stream<bool> _mapToAllCompleteState();
+
+  PublishConnectableStream<void> _mapToOnCompletedState();
+
+  PublishConnectableStream<void> _mapToOnAllCompletionState();
+
+  PublishConnectableStream<TodoEntity> _mapToOnDeletedState();
+
+  PublishConnectableStream<void> _mapToOnCompleteDeletedState();
+
+  PublishConnectableStream<TodoEntity> _mapToOnAddedState();
 
   @override
   TodoListBlocEvents get events => this;
@@ -96,10 +135,12 @@ abstract class $TodoListBloc extends RxBlocBase
 
   @override
   void dispose() {
-    _$fetchTodosEvent.close();
-    _$toggleTodoCompletionEvent.close();
-    _$deleteTodoEvent.close();
-    _$addTodoEvent.close();
+    _$fetchEvent.close();
+    _$toggleCompletionEvent.close();
+    _$toggleCompletionAllEvent.close();
+    _$deleteEvent.close();
+    _$deleteAllCompletedEvent.close();
+    _$createEvent.close();
     _$filterByEvent.close();
     _compositeSubscription.dispose();
     super.dispose();

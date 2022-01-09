@@ -24,8 +24,8 @@ class TodoListPage extends StatelessWidget {
             errorState: (bloc) => bloc.states.errors,
           ),
           TodoDeletedSnackBarListener<TodoListBlocType>(
-            undoCallback: (todo, bloc) => bloc.events.addTodo(todo),
-            deletedTodoState: (bloc) => bloc.states.todoDeleted,
+            undoCallback: (todo, bloc) => bloc.events.create(todo),
+            deletedTodoState: (bloc) => bloc.states.onDeleted,
           ),
           Expanded(child: _buildDataContainer()),
         ],
@@ -33,7 +33,7 @@ class TodoListPage extends StatelessWidget {
 
   Widget _buildDataContainer() =>
       RxResultBuilder<TodoListBlocType, List<TodoEntity>>(
-        state: (bloc) => bloc.states.todoList,
+        state: (bloc) => bloc.states.list,
         buildLoading: (ctx, bloc) => LoadingIndicator(),
         buildError: (ctx, error, bloc) => Center(child: Text(error.toString())),
         buildSuccess: (ctx, todos, bloc) => ListView.builder(
@@ -51,7 +51,7 @@ class TodoListPage extends StatelessWidget {
   ) =>
       TodoItem(
         todo: todo,
-        onDismissed: (_) => bloc.events.deleteTodo(todo),
+        onDismissed: (_) => bloc.events.delete(todo),
         onTap: () async => await Navigator.of(context).push<TodoEntity>(
           MaterialPageRoute(
             builder: (_) => TodoDetailsPage.withDependencies(
@@ -60,6 +60,6 @@ class TodoListPage extends StatelessWidget {
             ),
           ),
         ),
-        onCheckboxChanged: (_) => bloc.events.toggleTodoCompletion(todo),
+        onCheckboxChanged: (_) => bloc.events.toggleCompletion(todo),
       );
 }

@@ -36,15 +36,7 @@ class StatsBloc extends $StatsBloc {
   Stream<Result<StatsModel>> _mapToStatsState() => _$fetchStatsEvent
       .startWith(null)
       .switchMap(
-        (value) => _service
-            .todos()
-            .map(
-              (list) => StatsModel(
-                numActive: list.where((element) => !element.complete).length,
-                numCompleted: list.where((element) => element.complete).length,
-              ),
-            )
-            .asResultStream(),
+        (value) => _service.getStats().asResultStream(),
       )
       .setResultStateHandler(this);
 

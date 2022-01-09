@@ -16,16 +16,6 @@ abstract class HomeBlocEvents {
   ///
   /// Subscribe for state changes in [HomeBlocStates.selectedTab]
   void selectTab(AppTabModel tab);
-
-  /// Delete all completed [TodoEntity] list.
-  ///
-  /// Subscribe for state changes in [TodoListBlocStates.todoList]
-  void deleteTodoListCompleted();
-
-  /// Toggle the completion state of all [TodoEntity].
-  ///
-  /// Subscribe for state changes in [TodoListBlocStates.todoList]
-  void toggleTodoListCompletion();
 }
 
 /// A contract class containing all states of the HomeBloC.
@@ -34,57 +24,13 @@ abstract class HomeBlocStates {
   ///
   /// This state is controlled by [HomeBlocEvents.selectTab]
   Stream<AppTabModel> get selectedTab;
-
-  /// The state of a successfully deleted completed [TodoEntity] list.
-  ///
-  /// This state is controlled by [HomeBlocEvents.deleteTodoListCompleted]
-  PublishConnectableStream<void> get completeTodoListDeleted;
-
-  /// The state of the change of all [TodoEntity]
-  ///
-  /// This state is controlled by [HomeBlocEvents.toggleTodoListCompletion]
-  PublishConnectableStream<void> get todoListCompleted;
-
-  Stream<bool> get allTodoListComplete;
 }
 
 @RxBloc()
 class HomeBloc extends $HomeBloc {
-  HomeBloc(TodoListService service) : _service = service {
-    todoListCompleted.connect().addTo(_compositeSubscription);
-    completeTodoListDeleted.connect().addTo(_compositeSubscription);
-  }
-
-  final TodoListService _service;
+  HomeBloc();
 
   @override
   Stream<AppTabModel> _mapToSelectedTabState() =>
       _$selectTabEvent.startWith(AppTabModel.todos);
-
-  @override
-  PublishConnectableStream<void> _mapToTodoListCompletedState() =>
-      _$toggleTodoListCompletionEvent
-          .switchMap(
-            (_) => _service.toggleTodoListCompletion().asResultStream(),
-          )
-          .setResultStateHandler(this)
-          .whereSuccess()
-          .mapTo(null)
-          .publish();
-
-  @override
-  PublishConnectableStream<void> _mapToCompleteTodoListDeletedState() =>
-      _$deleteTodoListCompletedEvent
-          .switchMap(
-            (value) => _service.deleteTodoListCompleted().asResultStream(),
-          )
-          .setResultStateHandler(this)
-          .whereSuccess()
-          .mapTo(null)
-          .publish();
-
-  @override
-  Stream<bool> _mapToAllTodoListCompleteState() => _service.todos().map(
-        (todos) => _service.allTodoListComplete(todos),
-      );
 }

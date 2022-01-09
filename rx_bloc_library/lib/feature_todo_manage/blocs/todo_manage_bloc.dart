@@ -45,10 +45,10 @@ abstract class TodoManageBlocStates {
   /// /// This state is controlled by [TodoManageBlocEvents.setNote]
   Stream<String> get note;
 
-  /// The state of the successfully saved (created or updated) [TaskEntity]
-  Stream<TodoEntity> get saved;
+  Stream<bool> get errorVisible;
 
-  Stream<bool> get showError;
+  /// The state of the successfully saved (created or updated) [TaskEntity]
+  Stream<TodoEntity> get onSaved;
 }
 
 @RxBloc()
@@ -82,22 +82,22 @@ class TodoManageBloc extends $TodoManageBloc {
       .shareReplay(maxSize: 1);
 
   @override
-  Stream<TodoEntity> _mapToSavedState() => _$saveEvent
+  Stream<TodoEntity> _mapToOnSavedState() => _$saveEvent
       .throttleTime(Duration(seconds: 1))
       .where((event) => _service.isTodoValid(_copyTodoWithEventsData()))
       .switchMap(
         (value) {
-          final updatedEntity = _copyTodoWithEventsData();
+          final todo = _copyTodoWithEventsData();
 
           if (_isEditing) {
             return _listService
-                .updateTodo(updatedEntity)
-                .then((value) => updatedEntity)
+                .updateTodo(todo)
+                .then((value) => todo)
                 .asResultStream();
           }
           return _listService
-              .addNewTodo(updatedEntity)
-              .then((value) => updatedEntity)
+              .addNewTodo(todo)
+              .then((value) => todo)
               .asResultStream();
         },
       )
@@ -106,7 +106,10 @@ class TodoManageBloc extends $TodoManageBloc {
       .share();
 
   @override
-  Stream<bool> _mapToShowErrorState() => _$setTaskEvent.mapTo(true).skip(1);
+  Stream<bool> _mapToErrorVisibleState() => Rx.merge([
+        _$setTaskEvent.mapTo(true),
+        _$saveEvent.mapTo(true),
+      ]).skip(1);
 
   @override
   Stream<Exception> get errors => errorState;

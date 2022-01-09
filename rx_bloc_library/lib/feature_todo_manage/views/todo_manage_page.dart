@@ -52,10 +52,10 @@ class TodoManagePage extends StatelessWidget {
             ErrorSnackBarListener<TodoManageBlocType>(
               errorState: (bloc) => bloc.states.errors,
             ),
-            TodoSavedListener(),
+            _TodoSavedListener(),
             RxTextFormFieldBuilder<TodoManageBlocType>(
               state: (bloc) => bloc.states.task.translateErrors(context),
-              showErrorState: (bloc) => bloc.states.showError,
+              showErrorState: (bloc) => bloc.states.errorVisible,
               onChanged: (bloc, value) => bloc.events.setTask(value),
               builder: (fieldState) => TextFormField(
                 key: ArchSampleKeys.taskField,
@@ -111,15 +111,15 @@ class TodoSaveButton extends StatelessWidget {
   }
 }
 
-class TodoSavedListener extends StatelessWidget {
-  const TodoSavedListener({
+class _TodoSavedListener extends StatelessWidget {
+  const _TodoSavedListener({
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) =>
       RxBlocListener<TodoManageBlocType, TodoEntity>(
-        state: (bloc) => bloc.states.saved,
+        state: (bloc) => bloc.states.onSaved,
         listener: (context, todoEntity) => Navigator.of(context).pop(),
       );
 }

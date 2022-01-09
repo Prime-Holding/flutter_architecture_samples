@@ -12,7 +12,7 @@ abstract class TodoDetailsBlocEvents {
   /// Fetch the current todo.
   ///
   /// Subscribe for state changes in [TodoDetailsBlocStates.todo]
-  void fetchTodo();
+  void fetch();
 
   /// Toggle the [TodoEntity.complete] (complete/incomplete) of the current todo.
   ///
@@ -39,15 +39,15 @@ abstract class TodoDetailsBlocStates {
   ///  - [TodoDetailsBlocEvents.toggleCompletion]
   Stream<TodoEntity> get todo;
 
-  /// The state of the change of the current todo.
+  /// The state of the change of the current [TodoEntity]
   ///
   /// This state is controlled by [TodoDetailsBlocEvents.toggleCompletion]
-  PublishConnectableStream<bool> get completed;
+  PublishConnectableStream<bool> get onCompleted;
 
   /// The state of the deletion success of the current todo.
   ///
   /// This state is controlled by the [TodoDetailsBlocEvents.delete]
-  Stream<TodoEntity> get deleted;
+  Stream<TodoEntity> get onDeleted;
 }
 
 @RxBloc()
@@ -57,14 +57,14 @@ class TodoDetailsBloc extends $TodoDetailsBloc {
     required String id,
   })  : _service = service,
         _id = id {
-    completed.connect().addTo(_compositeSubscription);
+    onCompleted.connect().addTo(_compositeSubscription);
   }
 
   final TodoListService _service;
   final String _id;
 
   @override
-  Stream<TodoEntity> _mapToTodoState() => _$fetchTodoEvent
+  Stream<TodoEntity> _mapToTodoState() => _$fetchEvent
       .startWith(null)
       .switchMap(
         (value) => _service
@@ -77,7 +77,7 @@ class TodoDetailsBloc extends $TodoDetailsBloc {
       .whereSuccess();
 
   @override
-  PublishConnectableStream<bool> _mapToCompletedState() =>
+  PublishConnectableStream<bool> _mapToOnCompletedState() =>
       _$toggleCompletionEvent
           .withLatestFrom<TodoEntity, TodoEntity>(
             todo,
@@ -96,7 +96,7 @@ class TodoDetailsBloc extends $TodoDetailsBloc {
           .publish();
 
   @override
-  Stream<TodoEntity> _mapToDeletedState() => _$deleteEvent
+  Stream<TodoEntity> _mapToOnDeletedState() => _$deleteEvent
       .withLatestFrom<TodoEntity, TodoEntity>(
         todo,
         (complete, todo) => todo,
