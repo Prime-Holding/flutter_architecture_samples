@@ -35,6 +35,7 @@ a simple UI.
 - [Change Notifier + Provider Example](change_notifier_provider) ([Web Demo](https://fas_change_notifier_provider.codemagic.app)) - Uses the [ChangeNotifier](https://api.flutter.dev/flutter/foundation/ChangeNotifier-class.html) class from Flutter with [provider](https://pub.dev/packages/provider) package now recommended by the Flutter team.
 - [BLoC Example](bloc_flutter) ([Web Demo](https://fas_bloc_flutter.codemagic.app)) - An implementation of the BLoC pattern, which uses Sinks for Inputs and Streams for Outputs
 - [Bloc Library Example](bloc_library) ([Web Demo](https://fas_bloc_library.codemagic.app)) - Uses the [bloc](https://pub.dartlang.org/packages/bloc) and [flutter_bloc](https://pub.dartlang.org/packages/flutter_bloc) libraries to manage app state and update Widgets.
+- [RxBloc Library Example](rx_bloc_library) - Uses the [rx_bloc](https://pub.dartlang.org/packages/rx_bloc) and [flutter_rx_bloc](https://pub.dartlang.org/packages/flutter_rx_bloc) libraries to manage app state and update Widgets.
 - [MobX Example](mobx) ([Web Demo](https://fas_mobx.codemagic.app)) - Uses the [MobX](https://pub.dev/packages/mobx) library to manage app state and update widgets using `Observables`, `Actions` and `Reactions`.
 - [Redux Example](redux) ([Web Demo](https://fas_redux.codemagic.app)) - Uses the [Redux](https://pub.dartlang.org/packages/redux) library to manage app state and update Widgets
 - ["Simple" BLoC Example](simple_bloc_flutter) ([Web Demo](https://fas_simple_bloc.codemagic.app)) - Similar to the BLoC pattern, but uses Functions for Inputs and Streams for Outputs. Results in far less code compared to standard BLoC.
@@ -136,6 +137,7 @@ projects:
 - [Kushagra Saxena](https://github.com/kush3107)
 - [Shakib Hossain](https://github.com/shakib609)
 - [Mellati Fatah](https://github.com/GIfatahTH)
+- [Georgi Stanev](https://github.com/StanevPrime)
 
 I'd like to thank all of the folks who have helped write new samples, improve
 the current implementations, and added documentation! You're amazing! :)

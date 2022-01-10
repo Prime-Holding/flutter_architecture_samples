@@ -16,7 +16,7 @@ class LocalStorageRepository implements TodosRepository {
   final TodosRepository webClient;
 
   const LocalStorageRepository({
-    @required this.localStorage,
+    required this.localStorage,
     this.webClient = const WebClient(),
   });
 

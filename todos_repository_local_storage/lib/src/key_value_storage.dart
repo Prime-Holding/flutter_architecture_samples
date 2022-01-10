@@ -4,7 +4,7 @@
 
 import 'dart:convert';
 
-import 'package:key_value_store/key_value_store.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todos_repository_core/todos_repository_core.dart';
 
 /// Loads and saves a List of Todos using a provided KeyValueStore, which works
@@ -16,7 +16,7 @@ import 'package:todos_repository_core/todos_repository_core.dart';
 /// LocalStorageRepository.
 class KeyValueStorage implements TodosRepository {
   final String key;
-  final KeyValueStore store;
+  final Future<SharedPreferences> store;
   final JsonCodec codec;
 
   const KeyValueStorage(this.key, this.store, [this.codec = json]);
@@ -24,15 +24,15 @@ class KeyValueStorage implements TodosRepository {
   @override
   Future<List<TodoEntity>> loadTodos() async {
     return codec
-        .decode(store.getString(key))['todos']
+        .decode((await store).getString(key) ?? '{"todos": []}')['todos']
         .cast<Map<String, Object>>()
         .map<TodoEntity>(TodoEntity.fromJson)
         .toList(growable: false);
   }
 
   @override
-  Future<bool> saveTodos(List<TodoEntity> todos) {
-    return store.setString(
+  Future<bool> saveTodos(List<TodoEntity> todos) async {
+    return (await store).setString(
       key,
       codec.encode({
         'todos': todos.map((todo) => todo.toJson()).toList(),
