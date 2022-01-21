@@ -79,7 +79,7 @@ abstract class TodoListBlocStates {
 
   /// The completion state of the change of all [TodoEntity]
   ///
-  /// This state is controlled by [HomeBlocEvents.toggleTodoListCompletion]
+  /// This state is controlled by [TodoListBlocEvents.toggleCompletionAll]
   PublishConnectableStream<void> get onAllCompletion;
 
   /// The state of a successfully deleted [TodoEntity]
@@ -89,7 +89,7 @@ abstract class TodoListBlocStates {
 
   /// The state of a successfully deleted completed [TodoEntity] list.
   ///
-  /// This state is controlled by [HomeBlocEvents.deleteTodoListCompleted]
+  /// This state is controlled by [TodoListBlocEvents.deleteAllCompleted]
   PublishConnectableStream<void> get onCompleteDeleted;
 
   /// The state of the successfully added [TodoEntity].

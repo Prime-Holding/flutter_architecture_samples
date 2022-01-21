@@ -6,28 +6,34 @@ import 'package:rx_bloc_library/base/services/todo_list_service.dart';
 import 'package:rx_bloc_library/feature_stats/blocs/stats_bloc.dart';
 import 'package:rx_bloc_test/rx_bloc_test.dart';
 import 'package:test/test.dart';
+import 'package:todos_repository_core/todos_repository_core.dart';
 import '../../stubs.dart';
 import 'stats_bloc_test.mocks.dart';
 
 @GenerateMocks([
-  TodoListService,
+  ReactiveTodosRepository,
 ])
 void main() {
-  late TodoListService serviceMock;
+  late ReactiveTodosRepository repositoryMock;
+  late StatsBloc statsBloc;
 
   setUp(() {
-    serviceMock = MockTodoListService();
+    repositoryMock = MockReactiveTodosRepository();
+
+    statsBloc = StatsBloc(
+      TodoListService(repositoryMock),
+    );
   });
 
-  group('error state', () {
+  group('StatsBloc error state', () {
     rxBlocTest<StatsBloc, Exception>(
-      'error',
+      'error state',
       build: () async {
-        when(serviceMock.getStats()).thenAnswer((_) async* {
+        when(repositoryMock.todos()).thenAnswer((_) async* {
           throw Stubs.genericModel;
         });
 
-        return StatsBloc(serviceMock);
+        return statsBloc;
       },
       act: (bloc) async {
         bloc.states.stats.listen((event) {}, onError: (error) {});
@@ -37,15 +43,15 @@ void main() {
     );
   });
 
-  group('stats state', () {
+  group('StatsBloc state', () {
     rxBlocTest<StatsBloc, Result<StatsModel>>(
       'stats success',
       build: () async {
-        when(serviceMock.getStats()).thenAnswer(
-          (_) => Stream.value(Stubs.stats22),
+        when(repositoryMock.todos()).thenAnswer(
+          (_) => Stream.value(Stubs.todosActive2Completed3),
         );
 
-        return StatsBloc(serviceMock);
+        return statsBloc;
       },
       state: (bloc) => bloc.states.stats,
       act: (bloc) async {
@@ -53,18 +59,18 @@ void main() {
       },
       expect: <Result<StatsModel>>[
         Result.loading(),
-        Result.success(Stubs.stats22),
+        Result.success(Stubs.statsActive2Completed3),
       ],
     );
 
     rxBlocTest<StatsBloc, Result<StatsModel>>(
       'stats error',
       build: () async {
-        when(serviceMock.getStats()).thenAnswer((_) async* {
+        when(repositoryMock.todos()).thenAnswer((_) async* {
           throw Stubs.genericModel;
         });
 
-        return StatsBloc(serviceMock);
+        return statsBloc;
       },
       state: (bloc) => bloc.states.stats,
       expect: <Result<StatsModel>>[
