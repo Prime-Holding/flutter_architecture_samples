@@ -15,14 +15,9 @@ import 'stats_bloc_test.mocks.dart';
 ])
 void main() {
   late ReactiveTodosRepository repositoryMock;
-  late StatsBloc statsBloc;
 
   setUp(() {
     repositoryMock = MockReactiveTodosRepository();
-
-    statsBloc = StatsBloc(
-      TodoListService(repositoryMock),
-    );
   });
 
   group('StatsBloc error state', () {
@@ -33,7 +28,7 @@ void main() {
           throw Stubs.genericModel;
         });
 
-        return statsBloc;
+        return _blockFactory(repositoryMock);
       },
       act: (bloc) async {
         bloc.states.stats.listen((event) {}, onError: (error) {});
@@ -51,7 +46,7 @@ void main() {
           (_) => Stream.value(Stubs.todosActive2Completed3),
         );
 
-        return statsBloc;
+        return _blockFactory(repositoryMock);
       },
       state: (bloc) => bloc.states.stats,
       act: (bloc) async {
@@ -70,7 +65,7 @@ void main() {
           throw Stubs.genericModel;
         });
 
-        return statsBloc;
+        return _blockFactory(repositoryMock);
       },
       state: (bloc) => bloc.states.stats,
       expect: <Result<StatsModel>>[
@@ -80,3 +75,7 @@ void main() {
     );
   });
 }
+
+StatsBloc _blockFactory(ReactiveTodosRepository repositoryMock) => StatsBloc(
+      TodoListService(repositoryMock),
+    );
