@@ -16,7 +16,7 @@ void main() {
           scenario: Scenario(name: 'success'),
           widget: statsPageFactory(
             stats: Result.success(
-              Stubs.stats12,
+              Stubs.statsActive1Completed2,
             ),
           ),
         ),
