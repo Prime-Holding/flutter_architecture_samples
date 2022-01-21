@@ -28,7 +28,7 @@ void main() {
           throw Stubs.genericModel;
         });
 
-        return _blockFactory(repositoryMock);
+        return _blocFactory(repositoryMock);
       },
       act: (bloc) async {
         bloc.states.stats.listen((event) {}, onError: (error) {});
@@ -46,7 +46,7 @@ void main() {
           (_) => Stream.value(Stubs.todosActive2Completed3),
         );
 
-        return _blockFactory(repositoryMock);
+        return _blocFactory(repositoryMock);
       },
       state: (bloc) => bloc.states.stats,
       act: (bloc) async {
@@ -65,7 +65,7 @@ void main() {
           throw Stubs.genericModel;
         });
 
-        return _blockFactory(repositoryMock);
+        return _blocFactory(repositoryMock);
       },
       state: (bloc) => bloc.states.stats,
       expect: <Result<StatsModel>>[
@@ -76,6 +76,6 @@ void main() {
   });
 }
 
-StatsBloc _blockFactory(ReactiveTodosRepository repositoryMock) => StatsBloc(
+StatsBloc _blocFactory(ReactiveTodosRepository repositoryMock) => StatsBloc(
       TodoListService(repositoryMock),
     );
